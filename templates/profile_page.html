@@ -1,1 +1,42 @@
-This is the profile page
+{% extends 'base.html' %}
+{% block content %}
+
+<script>
+function initialize() {
+  var homeLatLng = {lat: {{session['home_lat']}}, lng: {{session['home_long']}}};
+  var mapProp = {
+    center:new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}}),
+    zoom:12,
+    mapTypeId:google.maps.MapTypeId.ROADMAP
+  };
+  var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+
+  var marker=new google.maps.Marker({
+    position: homeLatLng,
+    map: map
+  })
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+
+
+</script>
+
+<form action='/logout'>
+<input type='submit' value='Logout'>
+</form>
+
+<h1>Profile page for {{ username }}</h1>
+
+<!-- Location: <input type='text' name='title'/> -->
+
+<div id="googleMap" style="width:500px;height:380px;"></div>
+
+
+<p> {{session['home_lat']}} {{session['home_long']}}</p>
+<script>
+
+
+</script>
+
+{% endblock %}

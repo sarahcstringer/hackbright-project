@@ -15,16 +15,46 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def homepage():
 
-    return render_template('homepage.html')
+    try: 
+        session['user']
+        return redirect('/profile/'+session['user'])
+    except:
+        return render_template('homepage.html')
 
 @app.route('/signup')
 def signup():
 
     return render_template('signup.html')
 
-@app.route('/check-username', methods=['POST'])
-def check_username():
-    """Checks to see if username is unique"""
+@app.route('/check-login', methods=['POST'])
+def check_login():
+    """Checks to see if username and password match account"""
+
+    username = request.form.get('username')
+    password = request.form.get('password')
+    session['user'] = username
+
+
+    try:
+        user = User.query.filter(User.username == username).one()
+        if user.username == username and user.password == password:
+            session['user'] = username
+            session['home_lat'] = user.home_lat 
+            session['home_long'] = user.home
+            return 'True'
+        else: 
+            return 'False'
+
+    except:
+        return 'False'
+
+@app.route('/logout')
+def logout():
+
+    flash('Successfully logged out')
+    session.pop('user')
+    return redirect('/')
+
 
 @app.route('/create-profile', methods=['POST'])
 def check_signup_pw():
@@ -42,7 +72,7 @@ def check_signup_pw():
     db.session.add(user)
     db.session.commit()
 
-    session['user'] = email
+    session['user'] = username
     print session['user']
     return render_template('profile.html', fname=fname, lname=lname,
                             email=email, username=username)
@@ -59,6 +89,9 @@ def set_home():
 
     user = User.query.filter(User.email == session['user']).one()
 
+    session['home_lat'] = home_lat 
+    session['home_long'] = home_long
+
     setattr(user, 'home_lat', home_lat)
     setattr(user, 'home_long', home_long)
 
@@ -66,11 +99,11 @@ def set_home():
 
     return "True"
 
-@app.route('/profile')
-def profile_page():
+@app.route('/profile/<username>')
+def profile_page(username):
     """Render profile page"""
 
-    return render_template('profile_page.html')
+    return render_template('profile_page.html', username=username)
 
 
 

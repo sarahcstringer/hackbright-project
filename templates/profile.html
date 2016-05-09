@@ -120,12 +120,12 @@
 
         console.log(homeLocation)
 
-        // var username = '{{ username }}';
-        // console.log(username);
+        var username = '{{ username }}';
+        console.log(username);
 
         $('#verify').on('click', function(evt) {
-            $.post('/set-home', homeLocation, function(data) {
-                console.log(data);
+            $.post('/set-home', homeLocation, function() {
+                window.location.href = ('/profile/'+username);
             })
         })
 
@@ -144,8 +144,7 @@
 
       }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqn_uUVrUd8tszpmGKjJiFt0voPiAy9k4&libraries=places&callback=initMap"
-        async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqn_uUVrUd8tszpmGKjJiFt0voPiAy9k4&libraries=places&callback=initMap" async defer></script>
 
 
   </body>
