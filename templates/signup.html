@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Sign up</h1>
+
+<form action='/create-profile' method='POST'>
+    First Name: <input type='text' name='fname' placeholder='First name'>
+    <br>
+    Last Name: <input type='text' name='lname' placeholder='Last name'>
+    <br>
+    Email: <input type='text' name='email' placeholder="Email">
+    <br>
+    Username: <input type='text' name='username' placeholder="Username">
+    <br>
+    Password: <input type='password' name='pw' id='pw' placeholder="Create a password">
+    <br>
+    Re-enter Password: <input type='password' name='checkpw' id='checkpw' placeholder="Re-enter password">
+    <div id="checkpwdiv"></div>
+    <br>
+    <input type='submit' value='Create Account' id='createaccount'>
+</form>
+
+
+<script>
+    
+    $('#checkpw').on('change', function(evt){
+        if ($('#checkpw').val() !== $('#pw').val()) {
+            $('#checkpwdiv').html('Passwords do not match.')
+            $('createaccount').on('click', function(evt) {
+                evt.preventDefault();
+            })
+        } else {
+           $('#checkpwdiv').html('') 
+        }
+    })
+
+
+    $('#pw').on('change', function(evt){
+        if ($('#checkpw').val() !== $('#pw').val() && $('#checkpw').val() !== '')  {
+            $('#checkpwdiv').html('Passwords do not match.')
+            $('createaccount').on('click', function(evt) {
+                evt.preventDefault();
+            })
+        } else {
+           $('#checkpwdiv').html('') 
+        }
+    })
+
+
+
+    // $('#createaccount').on('click', function(evt) {
+    //     evt.preventDefault();
+    //     if
+    // })
+
+</script>
+
+{% endblock %}

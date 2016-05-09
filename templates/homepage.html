@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Homepage</h1>
+
+<form action='/username' method='POST' id='login'>
+    <input type='text' id='username' placeholder='Username or Email'>
+    <br>
+    <input type='submit' value='Login'>
+    <br>
+</form>
+
+<p>Don't have a username? <a href='/signup'>Sign up here</a>.</p>
+
+
+{% endblock %}
