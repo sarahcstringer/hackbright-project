@@ -17,8 +17,8 @@ class User(db.Model):
     lname = db.Column(db.String(25), nullable=False )
     username = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(25), nullable=False)
-    home_lat = db.Column(db.String(20), nullable=True)
-    home_long = db.Column(db.String(20), nullable=True)
+    home_lat = db.Column(db.String(40), nullable=True)
+    home_long = db.Column(db.String(40), nullable=True)
     # home_address = db.Column(db.String(25))
     # home_city = db.Column
 
@@ -32,9 +32,9 @@ class Location(db.Model):
     __tablename__ = 'locations'
 
     location_id = db.Column(db.String(40), primary_key=True)
-    latitude = db.Column(db.String(20), nullable=False)
-    longitude = db.Column(db.String(20), nullable=False)
-    address = db.Column(db.String(200), nullable=False)
+    latitude = db.Column(db.String(40), nullable=False)
+    longitude = db.Column(db.String(40), nullable=False)
+    address = db.Column(db.String(500), nullable=False)
 
 class Log(db.Model):
 
@@ -43,7 +43,7 @@ class Log(db.Model):
     log_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
                                                         nullable=False)
-    location_id = db.Column(db.String(20), db.ForeignKey('locations.location_id'), 
+    location_id = db.Column(db.String(40), db.ForeignKey('locations.location_id'), 
                                                         nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     visit_date = db.Column(db.String(20), nullable=False)

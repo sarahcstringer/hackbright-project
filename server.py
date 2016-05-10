@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, redirect, request, flash, session
 from jinja2 import StrictUndefined
-from model import connect_to_db, db, User, Log
+from model import connect_to_db, db, User, Log, Location
 from datetime import datetime
 
 app = Flask(__name__)
@@ -84,21 +84,34 @@ def check_signup_pw():
 def set_home():
     """Sets user home location"""
 
+    print "I got here"
+
     home_lat = request.form.get('lat')
     home_long = request.form.get('long')
 
+    print "I retrieved home lat and long"
 
     user = User.query.filter(User.email == session['user']).one()
 
+    print "I found a user"
+
     setattr(user, 'home_lat', home_lat)
+
+    print "I set home lat"
+
     setattr(user, 'home_long', home_long)
+
+    print "I set home long"
+
 
     db.session.commit()
 
+    print "I totally committed"
+
     user = User.query.filter(User.email == session['user']).one()
 
-    session['home_lat'] = user.home_lat 
-    session['home_long'] = user.home_long
+    session['home_lat'] = home_lat 
+    session['home_long'] = home_long
 
     return "True"
 
@@ -108,8 +121,12 @@ def profile_page(username):
 
     current_date = datetime.now().strftime('%A, %B %d, %Y')
 
+    user = User.query.filter(User.username == username).one() 
+
+    user_logs = Log.query.filter(Log.user_id == user.user_id)
+
     return render_template('profile_page.html', username=username, 
-                        current_date=current_date)
+                        current_date=current_date, user_logs=user_logs)
 
 
 @app.route('/profile/<username>/add-location')
@@ -137,12 +154,17 @@ def log_new_location():
     user = User.query.filter(User.username == session['user']).one()
     print "I got this user", user
 
+
+    print location_id, latitude, longitude, address
+    print type(latitude)
+    print type(longitude)
+
     location = Location(location_id=location_id, latitude=latitude,
                         longitude=longitude, address=address)
 
     
     db.session.add(location)
-    db.commit()
+    db.session.commit()
     print "I added a location"
 
     log = Log(user_id=user.user_id, location_id=location_id, 
@@ -150,10 +172,11 @@ def log_new_location():
             departed=departed, comments=comments, title=title)
 
     db.session.add(log)
-    db.commit()
+    db.session.commit()
     print "I created a log"
 
     return "True"
+    return
 
 
 ###################
