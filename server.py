@@ -4,11 +4,14 @@ from flask import Flask, render_template, redirect, request, flash, session
 from jinja2 import StrictUndefined
 from model import connect_to_db, db, User, Log, Location
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
 #for debug toolbar
 app.secret_key = 'ABC'
+google_api = os.environ['GOOGLE_LOC_API']
+google_location_api = "https://maps.googleapis.com/maps/api/js?key="+google_api+"&libraries=places&callback=initMap"
 
 app.jinja_env.undefined = StrictUndefined
 
@@ -76,7 +79,8 @@ def check_signup_pw():
     session['user'] = username
     print session['user']
     return render_template('profile.html', fname=fname, lname=lname,
-                            email=email, username=username)
+                            email=email, username=username, 
+                            google_location_api=google_location_api)
 
 
 
@@ -132,7 +136,8 @@ def profile_page(username):
 @app.route('/profile/<username>/add-location')
 def add_location(username):
 
-    return render_template('add_location.html')
+    return render_template('add_location.html', 
+                    google_location_api=google_location_api)
 
 @app.route('/log-new-location', methods=['POST'])
 def log_new_location():
