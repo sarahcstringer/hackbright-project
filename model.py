@@ -27,12 +27,14 @@ class User(db.Model):
         return "<User user_id={}, username={}".format(self.user_id, 
                                                         self.username)
 
-# class Location(db.Model):
+class Location(db.Model):
 
-#     __tablename__ = 'locations'
+    __tablename__ = 'locations'
 
-#     location_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-#     location_name = db.Column(db.String())
+    location_id = db.Column(db.String(40), primary_key=True)
+    latitude = db.Column(db.String(20), nullable=False)
+    longitude = db.Column(db.String(20), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
 
 class Log(db.Model):
 
@@ -41,13 +43,18 @@ class Log(db.Model):
     log_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
                                                         nullable=False)
-    # location_id = db.Column(db.Integer, db.ForeignKey('locations.location_id'),
-    #                                                     nullable=False)
+    location_id = db.Column(db.String(20), db.ForeignKey('locations.location_id'), 
+                                                        nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
-    # date = db.Column(db.Date)
-    # arrived = db.Column()
-    # departed = db.Column()
+    visit_date = db.Column(db.String(20), nullable=False)
+    arrived = db.Column(db.String(20), nullable=False)
+    departed = db.Column(db.String(20), nullable=False)
     comments = db.Column(db.Text, nullable=False)
+    title = db.Column(db.String(50), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('logs'))
+
+    location = db.relationship('Location', backref=db.backref('logs'))
 
 
 def connect_to_db(app):

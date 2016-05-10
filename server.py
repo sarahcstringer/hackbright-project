@@ -3,6 +3,7 @@
 from flask import Flask, render_template, redirect, request, flash, session
 from jinja2 import StrictUndefined
 from model import connect_to_db, db, User, Log
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -40,7 +41,7 @@ def check_login():
         if user.username == username and user.password == password:
             session['user'] = username
             session['home_lat'] = user.home_lat 
-            session['home_long'] = user.home
+            session['home_long'] = user.home_long
             return 'True'
         else: 
             return 'False'
@@ -89,13 +90,15 @@ def set_home():
 
     user = User.query.filter(User.email == session['user']).one()
 
-    session['home_lat'] = home_lat 
-    session['home_long'] = home_long
-
     setattr(user, 'home_lat', home_lat)
     setattr(user, 'home_long', home_long)
 
     db.session.commit()
+
+    user = User.query.filter(User.email == session['user']).one()
+
+    session['home_lat'] = user.home_lat 
+    session['home_long'] = user.home_long
 
     return "True"
 
@@ -103,8 +106,54 @@ def set_home():
 def profile_page(username):
     """Render profile page"""
 
-    return render_template('profile_page.html', username=username)
+    current_date = datetime.now().strftime('%A, %B %d, %Y')
 
+    return render_template('profile_page.html', username=username, 
+                        current_date=current_date)
+
+
+@app.route('/profile/<username>/add-location')
+def add_location(username):
+
+    return render_template('add_location.html')
+
+@app.route('/log-new-location', methods=['POST'])
+def log_new_location():
+    """take input, log new location"""
+
+    latitude = request.form.get('lat')
+    longitude = request.form.get('long')
+    address = request.form.get('address')
+    location_id = request.form.get('location_id')
+    title = request.form.get('title')
+    arrived = request.form.get('arrival')
+    departed = request.form.get('departure')
+    visit_date = request.form.get('date')
+    created_at = datetime.now()
+    comments = request.form.get('comments')
+
+    print "I have finished this stuff"
+
+    user = User.query.filter(User.username == session['user']).one()
+    print "I got this user", user
+
+    location = Location(location_id=location_id, latitude=latitude,
+                        longitude=longitude, address=address)
+
+    
+    db.session.add(location)
+    db.commit()
+    print "I added a location"
+
+    log = Log(user_id=user.user_id, location_id=location_id, 
+            created_at=created_at, visit_date=visit_date, arrived=arrived,
+            departed=departed, comments=comments, title=title)
+
+    db.session.add(log)
+    db.commit()
+    print "I created a log"
+
+    return "True"
 
 
 ###################

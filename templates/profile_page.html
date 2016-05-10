@@ -27,15 +27,22 @@ google.maps.event.addDomListener(window, 'load', initialize);
 </form>
 
 <h1>Profile page for {{ username }}</h1>
+<h3>{{ current_date }}</h3>
 
 <!-- Location: <input type='text' name='title'/> -->
 
 <div id="googleMap" style="width:500px;height:380px;"></div>
 
+<button id='addLocation' name='addLocation'>Add Location</button>
 
-<p> {{session['home_lat']}} {{session['home_long']}}</p>
 <script>
+var username = "{{session['user']}}"
+    $('#addLocation').on('click', function(){
+    window.location.href = ('/profile/'+username+'/add-location')})
 
+    // $('#addLocation').on('click', function() {
+    //     $.get('/')
+    // }
 
 </script>
 
