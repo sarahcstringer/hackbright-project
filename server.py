@@ -199,7 +199,9 @@ def change_previous_day():
             'departed': log.departed,
             'comments': log.comments,
             'title': log.title,
-            'user': log.user_id
+            'user': log.user_id,
+            'locationLat': log.location.latitude,
+            'locationLong': log.location.longitude
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
                                 Log.visit_date == unicode(date_of_logs)).all()}
@@ -215,8 +217,30 @@ def change_next_day():
     d = request.form.get('showDate')
     current_date = datetime.strptime(d, '%A, %B %d, %Y')
     next_day = current_date + timedelta(days=1)
+    date_of_logs = next_day.strftime('%Y-%m-%d')
 
-    return next_day.strftime('%A, %B %d, %Y')
+    user = User.query.filter(User.username == session['user']).one()
+
+    logs = {
+        log.log_id: {
+            'locationId': log.location_id,
+            'visitDate': log.visit_date,
+            'arrived': log.arrived,
+            'departed': log.departed,
+            'comments': log.comments,
+            'title': log.title,
+            'user': log.user_id,
+            'locationLat': log.location.latitude,
+            'locationLong': log.location.longitude
+        }
+        for log in Log.query.filter(Log.user_id == user.user_id,
+                                Log.visit_date == unicode(date_of_logs)).all()}
+
+    info = {'date': next_day.strftime('%A, %B %d, %Y'),
+            'logs': logs}
+
+
+    return jsonify(info)
 
 # @app.route('/change-next-day')
 
