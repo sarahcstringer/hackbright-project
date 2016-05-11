@@ -27,7 +27,31 @@ google.maps.event.addDomListener(window, 'load', initialize);
 </form>
 
 <h1>Profile page for {{ username }}</h1>
-<h3>{{ current_date }}</h3>
+<br><br>
+<button id='previous-day' name='previous-day'>Previous Day</button>
+<h3 id='displayDate'>{{ current_date }}</h3>
+<button id='next-day' name='next-day'>Next Day</button>
+
+<!-- Get previous day's info -->
+
+<script>
+
+$('#previous-day').on('click', function() {
+  var changeDatePrev = {'showDate': $('#displayDate').html()};
+  $.post('/change-previous-day', changeDatePrev, function(data) {
+    $('#displayDate').html(data);
+  })
+})
+
+$('#next-day').on('click', function() {
+  var changeDateNext = {'showDate': $('#displayDate').html()};
+  $.post('/change-next-day', changeDateNext, function(data) {
+    $('#displayDate').html(data);
+  })
+})
+
+</script>
+
 
 <!-- Location: <input type='text' name='title'/> -->
 
@@ -36,22 +60,25 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <button id='addLocation' name='addLocation'>Add Location</button>
 
 {% for log in user_logs %}
-<p>{{ log.log_id }}, {{log.title}}, {{log.comments}}</p>
+<div id='{{ log.log_id }}'>Log ID: {{ log.log_id }}; Log Title: {{log.title}}; Comments: {{log.comments}}</div>
 {% endfor %}
 
-<!-- {% for log in user_logs %}
-<p>{{log.log_id}}</p><br>
-{% endfor %}
- -->
 <script>
-var username = "{{session['user']}}"
+var username = "{{session['user']}}";
     $('#addLocation').on('click', function(){
     window.location.href = ('/profile/'+username+'/add-location')})
-
-    // $('#addLocation').on('click', function() {
-    //     $.get('/')
-    // }
-
 </script>
+
+
+<!-- Create markers for map -->
+
+{% for log in user_logs %}
+
+ <script>
+   
+
+ </script>
+
+{% endfor %}
 
 {% endblock %}

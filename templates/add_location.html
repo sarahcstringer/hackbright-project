@@ -79,7 +79,7 @@
 
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 37.7749, lng: -122.4194},
+          center: {lat: {{session['home_lat']}}, lng: {{session['home_long']}}},
           zoom: 10
         });
         var input = /** @type {!HTMLInputElement} */(

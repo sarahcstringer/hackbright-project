@@ -3,7 +3,7 @@
 from flask import Flask, render_template, redirect, request, flash, session
 from jinja2 import StrictUndefined
 from model import connect_to_db, db, User, Log, Location
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 app = Flask(__name__)
@@ -127,7 +127,7 @@ def profile_page(username):
 
     user = User.query.filter(User.username == username).one() 
 
-    user_logs = Log.query.filter(Log.user_id == user.user_id)
+    user_logs = Log.query.filter(Log.user_id == user.user_id).all()
 
     return render_template('profile_page.html', username=username, 
                         current_date=current_date, user_logs=user_logs)
@@ -182,6 +182,28 @@ def log_new_location():
 
     return "True"
     return
+
+
+@app.route('/change-previous-day', methods=['POST'])
+def change_previous_day():
+    """Change to show previous day"""
+
+    d = request.form.get('showDate')
+    current_date = datetime.strptime(d, '%A, %B %d, %Y')
+    previous_day = current_date - timedelta(days=1)
+
+    return previous_day.strftime('%A, %B %d, %Y')
+
+@app.route('/change-next-day', methods=['POST'])
+def change_next_day():
+
+    d = request.form.get('showDate')
+    current_date = datetime.strptime(d, '%A, %B %d, %Y')
+    next_day = current_date + timedelta(days=1)
+
+    return next_day.strftime('%A, %B %d, %Y')
+
+# @app.route('/change-next-day')
 
 
 ###################
