@@ -1,6 +1,7 @@
 """Hackbright Project"""
 
-from flask import Flask, render_template, redirect, request, flash, session
+from flask import Flask, render_template, redirect, request, flash, session, jsonify
+from flask_debugtoolbar import DebugToolbarExtension
 from jinja2 import StrictUndefined
 from model import connect_to_db, db, User, Log, Location
 from datetime import datetime, timedelta
@@ -88,29 +89,15 @@ def check_signup_pw():
 def set_home():
     """Sets user home location"""
 
-    print "I got here"
-
     home_lat = request.form.get('lat')
     home_long = request.form.get('long')
 
-    print "I retrieved home lat and long"
-
     user = User.query.filter(User.email == session['user']).one()
 
-    print "I found a user"
-
     setattr(user, 'home_lat', home_lat)
-
-    print "I set home lat"
-
     setattr(user, 'home_long', home_long)
 
-    print "I set home long"
-
-
     db.session.commit()
-
-    print "I totally committed"
 
     user = User.query.filter(User.email == session['user']).one()
 
@@ -125,10 +112,15 @@ def profile_page(username):
 
     current_date = datetime.now().strftime('%A, %B %d, %Y')
 
+    date_of_logs = datetime.now().strftime('%Y-%m-%d')
+
     user = User.query.filter(User.username == username).one() 
 
-    user_logs = Log.query.filter(Log.user_id == user.user_id).all()
+    user_logs = Log.query.filter(Log.user_id == user.user_id,
+                                Log.visit_date == unicode(date_of_logs)).all()
 
+    print user_logs
+    print "ugh"
     return render_template('profile_page.html', username=username, 
                         current_date=current_date, user_logs=user_logs)
 
@@ -168,9 +160,13 @@ def log_new_location():
                         longitude=longitude, address=address)
 
     
-    db.session.add(location)
-    db.session.commit()
-    print "I added a location"
+    try:
+        Location.query.filter(Location.location_id == location.location_id).one()
+        print "This location exists"
+    except: 
+        db.session.add(location)
+        db.session.commit()
+        print "I added a location"
 
     log = Log(user_id=user.user_id, location_id=location_id, 
             created_at=created_at, visit_date=visit_date, arrived=arrived,
@@ -191,8 +187,27 @@ def change_previous_day():
     d = request.form.get('showDate')
     current_date = datetime.strptime(d, '%A, %B %d, %Y')
     previous_day = current_date - timedelta(days=1)
+    date_of_logs = previous_day.strftime('%Y-%m-%d')
 
-    return previous_day.strftime('%A, %B %d, %Y')
+    user = User.query.filter(User.username == session['user']).one()
+
+    logs = {
+        log.log_id: {
+            'locationId': log.location_id,
+            'visitDate': log.visit_date,
+            'arrived': log.arrived,
+            'departed': log.departed,
+            'comments': log.comments,
+            'title': log.title,
+            'user': log.user_id
+        }
+        for log in Log.query.filter(Log.user_id == user.user_id,
+                                Log.visit_date == unicode(date_of_logs)).all()}
+
+    info = {'date': previous_day.strftime('%A, %B %d, %Y'),
+            'logs': logs}
+
+    return jsonify(info)
 
 @app.route('/change-next-day', methods=['POST'])
 def change_next_day():
@@ -211,5 +226,7 @@ def change_next_day():
 if __name__ == '__main__':
 
     connect_to_db(app)
-
+    app.debug = True
+    # Use the DebugToolbar
+    DebugToolbarExtension(app)
     app.run()

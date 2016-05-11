@@ -2,6 +2,9 @@
 {% block content %}
 
 <script>
+
+// Create the map to display (here's, I think, where I need to create markers)
+
 function initialize() {
   var homeLatLng = {lat: {{session['home_lat']}}, lng: {{session['home_long']}}};
   var mapProp = {
@@ -21,48 +24,92 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 
 </script>
-
+<!-- Create logout button -->
 <form action='/logout'>
 <input type='submit' value='Logout'>
 </form>
 
+<!-- Profile info for user -->
 <h1>Profile page for {{ username }}</h1>
 <br><br>
+<!-- User can move back a day or forward a day -->
 <button id='previous-day' name='previous-day'>Previous Day</button>
 <h3 id='displayDate'>{{ current_date }}</h3>
 <button id='next-day' name='next-day'>Next Day</button>
 
-<!-- Get previous day's info -->
+
+
+
+<!-- Get previous day's info and next day's info-->
 
 <script>
 
 $('#previous-day').on('click', function() {
   var changeDatePrev = {'showDate': $('#displayDate').html()};
   $.post('/change-previous-day', changeDatePrev, function(data) {
-    $('#displayDate').html(data);
-  })
-})
+    
+    // Change the header date to the new date, one day earlier
+    $('#displayDate').html(data.date);
+    $('#logs').html('')
+    // 
+    console.log(data.logs);
+    // $('#logs').html('just hanging out');
+    var log, marker, html;
+
+    for (var key in data.logs) {
+      log = data.logs[key];
+
+      var newDiv = document.createElement('div');
+      newDiv.id = log.logId
+      newDiv.innerHTML = ('<div>' +
+        '<p><b>Title: </b>' + log.title + '</p>' +
+        '<p><b>Date: </b>' + log.visitDate + '</p>' +
+        '<p>Arrived: ' + log.arrived + '</p>' +
+        '<p>Departed: ' + log.departed + '</p>' + 
+        '<p>Comments: ' + log.comments + '</p>' +
+        '<p>User: ' + log.user + '</p>' +
+        '</div>');
+
+      $('#logs').append(newDiv)
+        // '<div id =' + log.logId + '>' +
+        // '<p><b>Title: </b>' + log.title + '</p>' +
+        // '<p>Arrived: ' + log.arrived + '</p>' +
+        // '<p>Departed: ' + log.departed + '</p>' + 
+        // '<p>Comments: ' + log.comments + '</p>' +
+        // '</div>');
+    }
+
+
+  });
+  });
 
 $('#next-day').on('click', function() {
   var changeDateNext = {'showDate': $('#displayDate').html()};
   $.post('/change-next-day', changeDateNext, function(data) {
     $('#displayDate').html(data);
+
   })
 })
 
 </script>
 
 
-<!-- Location: <input type='text' name='title'/> -->
-
 <div id="googleMap" style="width:500px;height:380px;"></div>
 
 <button id='addLocation' name='addLocation'>Add Location</button>
 
-{% for log in user_logs %}
-<div id='{{ log.log_id }}'>Log ID: {{ log.log_id }}; Log Title: {{log.title}}; Comments: {{log.comments}}</div>
-{% endfor %}
+<!-- When page loads, show the logs for that day -->
 
+<div id='logs'>Logs
+  {% for log in user_logs %}
+
+      <div id='{{ log.log_id }}'>Log ID: {{ log.log_id }}; Log Title: {{log.title}}; Comments: {{log.comments}}. {{ log.visit_date }}</div>
+    
+  {% endfor %}
+</div>
+
+
+<!-- Button to create new log (sends to different page) -->
 <script>
 var username = "{{session['user']}}";
     $('#addLocation').on('click', function(){
@@ -70,15 +117,5 @@ var username = "{{session['user']}}";
 </script>
 
 
-<!-- Create markers for map -->
-
-{% for log in user_logs %}
-
- <script>
-   
-
- </script>
-
-{% endfor %}
 
 {% endblock %}
