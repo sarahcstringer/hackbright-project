@@ -33,7 +33,7 @@ class Location(db.Model):
     latitude = db.Column(db.String(40), nullable=False)
     longitude = db.Column(db.String(40), nullable=False)
     address = db.Column(db.String(500), nullable=False)
-    # name = db.Column(db.String(100), nullable = False)
+    name = db.Column(db.String(100), nullable = False)
 
 class Log(db.Model):
 
@@ -60,7 +60,7 @@ class Type(db.Model):
     __tablename__ = 'types'
 
     type_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    type_name = db.Column(db.String(50), nullable=False)
+    type_name = db.Column(db.String(50), nullable=False, unique=True)
 
 class LocationType (db.Model):
 

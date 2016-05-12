@@ -139,10 +139,10 @@
                     'long': place.geometry.location.lng(),
                     'address': address,
                     'location_id': place.place_id,
-                    'name': place.name}
+                    'name': place.name,
+                    'place_types': JSON.stringify(place.types)}
 
-        console.log(addLocation)
-        console.log(place.name)
+        console.log(place.types)
 
 
         $('#verify').on('click', function() {
@@ -151,7 +151,9 @@
           addLocation.departure = $('#departure').val()
           addLocation.comments = $('#comments').val()
           addLocation.date = $('#date').val()
+          
           console.log(addLocation)
+          
           $.post('/log-new-location', addLocation, function() {
               window.location.href = ('/');
           })
