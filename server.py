@@ -12,10 +12,13 @@ app = Flask(__name__)
 #for debug toolbar
 app.secret_key = 'ABC'
 google_api = os.environ['GOOGLE_LOC_API']
+global google_location_api
 google_location_api = "https://maps.googleapis.com/maps/api/js?key="+google_api+"&libraries=places&callback=initMap"
-
 app.jinja_env.undefined = StrictUndefined
 
+@app.context_processor
+def inject_google_api():
+    return dict(google_location_api=google_location_api)
 
 @app.route('/')
 def homepage():
