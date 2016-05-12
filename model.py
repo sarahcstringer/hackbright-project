@@ -19,8 +19,6 @@ class User(db.Model):
     password = db.Column(db.String(25), nullable=False)
     home_lat = db.Column(db.String(40), nullable=True)
     home_long = db.Column(db.String(40), nullable=True)
-    # home_address = db.Column(db.String(25))
-    # home_city = db.Column
 
     def __repr__(self):
 
@@ -35,6 +33,7 @@ class Location(db.Model):
     latitude = db.Column(db.String(40), nullable=False)
     longitude = db.Column(db.String(40), nullable=False)
     address = db.Column(db.String(500), nullable=False)
+    # name = db.Column(db.String(100), nullable = False)
 
 class Log(db.Model):
 
@@ -55,6 +54,28 @@ class Log(db.Model):
     user = db.relationship('User', backref=db.backref('logs'))
 
     location = db.relationship('Location', backref=db.backref('logs'))
+
+class Type(db.Model):
+
+    __tablename__ = 'types'
+
+    type_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    type_name = db.Column(db.String(50), nullable=False)
+
+class LocationType (db.Model):
+
+    __tablename__ = 'location_types'
+
+    loc_type_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    location_id = db.Column(db.String(40), db.ForeignKey('locations.location_id'),
+                                            nullable=False)
+    type_id = db.Column(db.Integer, db.ForeignKey('types.type_id'), nullable=False)
+
+    location = db.relationship('Location', backref=db.backref('locationtypes'))
+
+    location_type = db.relationship('Type', backref=db.backref('locationtypes'))
+
+
 
 
 def connect_to_db(app):

@@ -138,9 +138,11 @@
           var addLocation = {'lat': place.geometry.location.lat(),
                     'long': place.geometry.location.lng(),
                     'address': address,
-                    'location_id': place.place_id}
+                    'location_id': place.place_id,
+                    'name': place.name}
 
         console.log(addLocation)
+        console.log(place.name)
 
 
         $('#verify').on('click', function() {

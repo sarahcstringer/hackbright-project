@@ -119,10 +119,8 @@ def profile_page(username):
     user_logs = Log.query.filter(Log.user_id == user.user_id,
                                 Log.visit_date == unicode(date_of_logs)).all()
 
-    print user_logs
-    print "ugh"
     return render_template('profile_page.html', username=username, 
-                        current_date=current_date, user_logs=user_logs)
+                        current_date=current_date, user_logs=user_logs, google_location_api=google_location_api)
 
 
 @app.route('/profile/<username>/add-location')
@@ -146,15 +144,7 @@ def log_new_location():
     created_at = datetime.now()
     comments = request.form.get('comments')
 
-    print "I have finished this stuff"
-
     user = User.query.filter(User.username == session['user']).one()
-    print "I got this user", user
-
-
-    print location_id, latitude, longitude, address
-    print type(latitude)
-    print type(longitude)
 
     location = Location(location_id=location_id, latitude=latitude,
                         longitude=longitude, address=address)
@@ -162,11 +152,9 @@ def log_new_location():
     
     try:
         Location.query.filter(Location.location_id == location.location_id).one()
-        print "This location exists"
     except: 
         db.session.add(location)
         db.session.commit()
-        print "I added a location"
 
     log = Log(user_id=user.user_id, location_id=location_id, 
             created_at=created_at, visit_date=visit_date, arrived=arrived,
@@ -174,10 +162,8 @@ def log_new_location():
 
     db.session.add(log)
     db.session.commit()
-    print "I created a log"
 
     return "True"
-    return
 
 
 @app.route('/change-previous-day', methods=['POST'])
@@ -201,7 +187,8 @@ def change_previous_day():
             'title': log.title,
             'user': log.user_id,
             'locationLat': log.location.latitude,
-            'locationLong': log.location.longitude
+            'locationLong': log.location.longitude,
+            'log_id': log.log_id
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
                                 Log.visit_date == unicode(date_of_logs)).all()}
@@ -231,7 +218,8 @@ def change_next_day():
             'title': log.title,
             'user': log.user_id,
             'locationLat': log.location.latitude,
-            'locationLong': log.location.longitude
+            'locationLong': log.location.longitude,
+            'log_id': log.log_id
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
                                 Log.visit_date == unicode(date_of_logs)).all()}
@@ -241,8 +229,6 @@ def change_next_day():
 
 
     return jsonify(info)
-
-# @app.route('/change-next-day')
 
 
 ###################
