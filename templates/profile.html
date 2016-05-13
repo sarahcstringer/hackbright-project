@@ -116,7 +116,8 @@
           marker.setVisible(true);
 
         var homeLocation = {'lat': place.geometry.location.lat(),
-                            'long': place.geometry.location.lng()};
+                            'long': place.geometry.location.lng(),
+                            'address': place.formatted_address};
 
         console.log(homeLocation)
 

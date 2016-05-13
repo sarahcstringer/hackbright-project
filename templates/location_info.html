@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<button id='backDir' name='backDir'>Back to Directory</button>
 
 <h1>{{ location_info.name }}</h1>
 <h4>{{ location_info.address }}</h4>
@@ -20,5 +21,14 @@
 {% endfor %}
 
 </div>
+
+
+<script>
+    $('#backDir').on('click', function() {
+        window.location.href = ('/profile/{{session["user"]}}/view-locations');
+    })
+
+</script>
+
 
 {% endblock %}

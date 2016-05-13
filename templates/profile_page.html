@@ -7,14 +7,13 @@
 
 function initialize() {
 
-
+// Function to remove markers when a new view loads
     function removeMarkers(){
     for(i=0; i<markers.length; i++){
         markers[i].setMap(null);
     }
   }
-
-
+// Function to bind info windows to markers
   function bindInfoWindow(marker, map, infoWindow, html) {
     google.maps.event.addListener(marker, 'click', function () {
       infoWindow.close();
@@ -23,14 +22,65 @@ function initialize() {
     });
   }
 
+  function addMarkers(data) {
+// Change the header date to the new date, one day earlier
+    
+    var bounds = new google.maps.LatLngBounds();
+    var home = new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}})
+    bounds.extend(home)
+    var infoWindow = new google.maps.InfoWindow({
+    width: 150
+    });
 
-  var homeLatLng = {lat: {{session['home_lat']}}, lng: {{session['home_long']}}};
+    $('#displayDate').html(data.date);
+    $('#logs').html('')
+    removeMarkers();
+
+    var log, marker, html;
+
+    for (var key in data.logs) {
+      log = data.logs[key];
+
+      var newDiv = document.createElement('div');
+      newDiv.id = log.log_id
+
+      html = ('<div>' +
+        '<p><b>Title: </b>' + log.title + '</p>' +
+        '<p><b>Date: </b>' + log.visitDate + '</p>' +
+        '<p>Arrived: ' + log.arrived + '</p>' +
+        '<p>Departed: ' + log.departed + '</p>' + 
+        '<p>Comments: ' + log.comments + '</p>' +
+        '<p>User: ' + log.user + '</p>' +
+        '</div>');
+
+      newDiv.innerHTML = html
+
+      $('#logs').append(newDiv)
+
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(log.locationLat, log.locationLong),
+        map: map,
+        title: log.title
+      });
+
+      markers.push(marker);
+
+      bounds.extend(marker.position);
+
+      bindInfoWindow(marker, map, infoWindow, html)
+    }
+  map.fitBounds(bounds);
+  };
+
+
+// Creating map properties
   var mapProp = {
     center:new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}}),
     zoom:10,
     mapTypeId:google.maps.MapTypeId.ROADMAP
   };
-  var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+  // Creating map variable
+  var map=new google.maps.Map(document.getElementById("map"),mapProp);
 
 // Set home marker
   // var marker=new google.maps.Marker({
@@ -41,143 +91,24 @@ function initialize() {
 
   var markers = [];
 
+
+// When page loads:
 $( document ).ready(function() {
+// Set info window variable
 
-    var infoWindow = new google.maps.InfoWindow({
-      width: 150
-  });
-
-  $.get('/load_today', function(data) {
-    $('#displayDate').html(data.date);
-    $('#logs').html('')
-    removeMarkers();
-
-    var log, marker, html;
-
-    for (var key in data.logs) {
-      log = data.logs[key];
-
-      var newDiv = document.createElement('div');
-      newDiv.id = log.log_id
-
-      html = ('<div>' +
-        '<p><b>Title: </b>' + log.title + '</p>' +
-        '<p><b>Date: </b>' + log.visitDate + '</p>' +
-        '<p>Arrived: ' + log.arrived + '</p>' +
-        '<p>Departed: ' + log.departed + '</p>' + 
-        '<p>Comments: ' + log.comments + '</p>' +
-        '<p>User: ' + log.user + '</p>' +
-        '</div>');
-
-      newDiv.innerHTML = html
-
-      $('#logs').append(newDiv)
-
-      marker = new google.maps.Marker({
-        position: new google.maps.LatLng(log.locationLat, log.locationLong),
-        map: map,
-        title: log.title
-      });
-
-      markers.push(marker);
-
-      bindInfoWindow(marker, map, infoWindow, html)
-    }
-    })
+// Get the day's logs through AJAX request
+  $.get('/load_today', addMarkers)
 });
 
 
 $('#previous-day').on('click', function() {
   var changeDatePrev = {'showDate': $('#displayDate').html()};
-
-    var infoWindow = new google.maps.InfoWindow({
-      width: 150
-  });
-
-  $.post('/change-previous-day', changeDatePrev, function(data) {
-    
-    // Change the header date to the new date, one day earlier
-    $('#displayDate').html(data.date);
-    $('#logs').html('')
-    removeMarkers();
-
-    var log, marker, html;
-
-    for (var key in data.logs) {
-      log = data.logs[key];
-
-      var newDiv = document.createElement('div');
-      newDiv.id = log.log_id
-
-      html = ('<div>' +
-        '<p><b>Title: </b>' + log.title + '</p>' +
-        '<p><b>Date: </b>' + log.visitDate + '</p>' +
-        '<p>Arrived: ' + log.arrived + '</p>' +
-        '<p>Departed: ' + log.departed + '</p>' + 
-        '<p>Comments: ' + log.comments + '</p>' +
-        '<p>User: ' + log.user + '</p>' +
-        '</div>');
-
-      newDiv.innerHTML = html
-
-      $('#logs').append(newDiv)
-
-      marker = new google.maps.Marker({
-        position: new google.maps.LatLng(log.locationLat, log.locationLong),
-        map: map,
-        title: log.title
-      });
-
-      markers.push(marker);
-
-      bindInfoWindow(marker, map, infoWindow, html)
-    }
-
-  });
-
+  $.post('/change-previous-day', changeDatePrev, addMarkers) })
 
 $('#next-day').on('click', function() {
   var changeDateNext = {'showDate': $('#displayDate').html()};
-  $.post('/change-next-day', changeDateNext, function(data) {
-    $('#displayDate').html(data.date);
-    $('#logs').html('')
-    removeMarkers();
-
-    var log, marker, html;
-
-    for (var key in data.logs) {
-      log = data.logs[key];
-
-      var newDiv = document.createElement('div');
-      newDiv.id = log.log_id
-
-      html = ('<div>' +
-        '<p><b>Title: </b>' + log.title + '</p>' +
-        '<p><b>Date: </b>' + log.visitDate + '</p>' +
-        '<p>Arrived: ' + log.arrived + '</p>' +
-        '<p>Departed: ' + log.departed + '</p>' + 
-        '<p>Comments: ' + log.comments + '</p>' +
-        '<p>User: ' + log.user + '</p>' +
-        '</div>');
-
-      newDiv.innerHTML = html
-
-      $('#logs').append(newDiv)
-
-      marker = new google.maps.Marker({
-        position: new google.maps.LatLng(log.locationLat, log.locationLong),
-        map: map,
-        title: log.title
-      });
-
-      markers.push(marker);
-
-      bindInfoWindow(marker, map, infoWindow, html)
-    }
+  $.post('/change-next-day', changeDateNext, addMarkers)
   });
-  });
-  })
-
   };
 
 
@@ -201,7 +132,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <h3 style='display:inline' id='displayDate'>{{ current_date }}</h3>
 <button style='display:inline' id='next-day' name='next-day'>Next Day</button>
 
-<div id="googleMap" style="width:500px;height:380px;"></div>
+<div id="map"></div>
 
 <button id='addLocation' name='addLocation'>Add Location</button>
 <button id='viewLocations' name='viewLocations'>View All Locations</button>
@@ -224,6 +155,15 @@ $('#viewLocations').on('click', function() {
 })
 </script>
 
+
+<script>
+  
+    $('#viewProfile').on('click', function() {
+        window.location.href = ('/profile/{{session["user"]}}/view-profile');
+    })
+
+
+</script>
 
 
 {% endblock %}

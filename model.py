@@ -19,6 +19,11 @@ class User(db.Model):
     password = db.Column(db.String(25), nullable=False)
     home_lat = db.Column(db.String(40), nullable=True)
     home_long = db.Column(db.String(40), nullable=True)
+    home_address = db.Column(db.String(250), nullable=True)
+    work_address = db.Column(db.String(250), nullable=True)
+    work_lat = db.Column(db.String(40), nullable=True)
+    work_long = db.Column(db.String(40), nullable=True)
+    date_created = db.Column(db.DateTime, nullable=False)
 
     def __repr__(self):
 
@@ -36,6 +41,10 @@ class Location(db.Model):
     name = db.Column(db.String(100), nullable = False)
     website = db.Column(db.String(200))
     phone = db.Column(db.String(200))
+
+    def __repr__(self):
+
+        return "<Location location_name={}, address={}".format(self.name, self.address)
 
 
 class Log(db.Model):
@@ -59,12 +68,20 @@ class Log(db.Model):
     location = db.relationship('Location', backref=db.backref('logs'), 
                                 order_by='desc(Location.name)')
 
+    def __repr__(self):
+
+        return "<Log title: {}, created on{}".format(self.title, self.created_at)
+
 class Type(db.Model):
 
     __tablename__ = 'types'
 
     type_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     type_name = db.Column(db.String(50), nullable=False, unique=True)
+
+    def __repr__(self):
+
+        return "<Location type {}".format(self.type_name)
 
 class LocationType (db.Model):
 
@@ -80,7 +97,9 @@ class LocationType (db.Model):
 
     location_type = db.relationship('Type', backref=db.backref('locationtypes'))
 
+    def __repr__(self):
 
+        return "<Location type {} for {}".format(self.type_id, self.location_id)
 
 
 def connect_to_db(app):

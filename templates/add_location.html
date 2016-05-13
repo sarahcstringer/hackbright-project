@@ -1,63 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Location</title>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        height: 50%;
-        width: 50%;
-      }
-      .controls {
-        margin-top: 10px;
-        border: 1px solid transparent;
-        border-radius: 2px 0 0 2px;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        height: 32px;
-        outline: none;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      }
-
-      #pac-input {
-        background-color: #fff;
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 300;
-        margin-left: 12px;
-        padding: 0 11px 0 13px;
-        text-overflow: ellipsis;
-        width: 300px;
-      }
-
-      #pac-input:focus {
-        border-color: #4d90fe;
-      }
-
-      .pac-container {
-        font-family: Roboto;
-      }
-
-      #type-selector {
-        color: #fff;
-        background-color: #4d90fe;
-        padding: 5px 11px 0px 11px;
-      }
-
-      #type-selector label {
-        font-family: Roboto;
-        font-size: 13px;
-        font-weight: 300;
-      }
-    </style>
-  </head>
-  <body>
+{% extends 'base.html' %}
+{% block content %}
 
   <p>Add location:</p> 
     <input id="pac-input" class="controls" type="text"
@@ -74,100 +16,90 @@
     </div>
 
     <button name='verify' value='verify' id='verify'>Add Location</button>
-    <script src="https://code.jquery.com/jquery.js"></script>
     <script>
 
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: {{session['home_lat']}}, lng: {{session['home_long']}}},
-          zoom: 10
-        });
-        var input = /** @type {!HTMLInputElement} */(
-            document.getElementById('pac-input'));
+  function initialize() {
+    
 
-        var types = document.getElementById('type-selector');
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(types);
+    var mapOptions = {
+      center: {lat: {{session['home_lat']}}, lng: {{session['home_long']}}},
+      zoom: 10,
+      scrollwheel: false
+    };
+    var map = new google.maps.Map(document.getElementById('map'),
+      mapOptions);
 
-        var autocomplete = new google.maps.places.Autocomplete(input);
-        autocomplete.bindTo('bounds', map);
+    var input = /** @type {HTMLInputElement} */(
+        document.getElementById('pac-input'));
 
-        var infowindow = new google.maps.InfoWindow();
-        var marker = new google.maps.Marker({
-          map: map,
-          anchorPoint: new google.maps.Point(0, -29)
-        });
+    // Create the autocomplete helper, and associate it with
+    // an HTML text input box.
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.bindTo('bounds', map);
 
-        autocomplete.addListener('place_changed', function() {
-          infowindow.close();
-          marker.setVisible(false);
-          var place = autocomplete.getPlace();
-          if (!place.geometry) {
-            window.alert("Autocomplete's returned place contains no geometry");
-            return;
-          }
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-          // If the place has a geometry, then present it on a map.
-          if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-          } else {
-            map.setCenter(place.geometry.location);
-            map.setZoom(17);  // Why 17? Because it looks good.
-          }
-          marker.setIcon(/** @type {google.maps.Icon} */({
-            url: place.icon,
-            size: new google.maps.Size(71, 71),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(17, 34),
-            scaledSize: new google.maps.Size(35, 35)
-          }));
-          marker.setPosition(place.geometry.location);
-          marker.setVisible(true);
+    var infowindow = new google.maps.InfoWindow();
+    var marker = new google.maps.Marker({
+      map: map
+    });
+    google.maps.event.addListener(marker, 'click', function() {
+      infowindow.open(map, marker);
+    });
 
-
-
-          var address = '';
-          if (place.address_components) {
-            address = [
-              (place.address_components[0] && place.address_components[0].short_name || ''),
-              (place.address_components[1] && place.address_components[1].short_name || ''),
-              (place.address_components[2] && place.address_components[2].short_name || '')
-            ].join(' ');
-          }
-
-          var addLocation = {'lat': place.geometry.location.lat(),
-                    'long': place.geometry.location.lng(),
-                    'address': place.formatted_address,
-                    'location_id': place.place_id,
-                    'name': place.name,
-                    'phone': place.formatted_phone_number,
-                    'website': place.website,
-                    'place_types': JSON.stringify(place.types)}
-
-          console.log(typeof(place.website));
-          console.log(place.formatted_phone_number);
-          console.log(place.formatted_address);
-
-
-        $('#verify').on('click', function() {
-          addLocation.title = $('#title').val()
-          addLocation.arrival = $('#arrival').val()
-          addLocation.departure = $('#departure').val()
-          addLocation.comments = $('#comments').val()
-          addLocation.date = $('#date').val()
-          
-          console.log(addLocation)
-          
-          $.post('/log-new-location', addLocation, function() {
-              window.location.href = ('/');
-          })
-        })
-
-
-          infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
-          infowindow.open(map, marker);
-        });
-
+    // Get the full place details when the user selects a place from the
+    // list of suggestions.
+    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+      infowindow.close();
+      var place = autocomplete.getPlace();
+      if (!place.geometry) {
+        return;
       }
+
+      if (place.geometry.viewport) {
+        map.fitBounds(place.geometry.viewport);
+      } else {
+        map.setCenter(place.geometry.location);
+        map.setZoom(17);
+      }
+
+      // Set the position of the marker using the place ID and location.
+      marker.setPlace(/** @type {!google.maps.Place} */ ({
+        placeId: place.place_id,
+        location: place.geometry.location
+      }));
+      marker.setVisible(true);
+
+      infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+          place.formatted_address + '</div>');
+      infowindow.open(map, marker);
+
+      var addLocation = {'lat': place.geometry.location.lat(),
+                      'long': place.geometry.location.lng(),
+                      'address': place.formatted_address,
+                      'location_id': place.place_id,
+                      'name': place.name,
+                      'phone': place.formatted_phone_number,
+                      'website': place.website,
+                      'place_types': JSON.stringify(place.types)}
+
+          $('#verify').on('click', function() {
+            addLocation.title = $('#title').val()
+            addLocation.arrival = $('#arrival').val()
+            addLocation.departure = $('#departure').val()
+            addLocation.comments = $('#comments').val()
+            addLocation.date = $('#date').val()
+            
+            console.log(addLocation)
+            
+            $.post('/log-new-location', addLocation, function() {
+                window.location.href = ('/');
+            })
+          })
+    });
+  }
+
+  // Run the initialize function when the window has finished loading.
+  google.maps.event.addDomListener(window, 'load', initialize);
     </script>
-    <script src={{google_location_api}} async defer></script>
+{% endblock %}

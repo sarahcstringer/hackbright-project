@@ -6,6 +6,7 @@ from jinja2 import StrictUndefined
 from model import connect_to_db, db, User, Log, Location, Type, LocationType 
 from datetime import datetime, timedelta
 import os
+from sqlalchemy import or_, func
 
 app = Flask(__name__)
 
@@ -13,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = 'ABC'
 google_api = os.environ['GOOGLE_LOC_API']
 global google_location_api
-google_location_api = "https://maps.googleapis.com/maps/api/js?key="+google_api+"&libraries=places&callback=initMap"
+google_location_api = "https://maps.googleapis.com/maps/api/js?key="+google_api+"&libraries=places&callback=initialize"
 app.jinja_env.undefined = StrictUndefined
 
 @app.context_processor
@@ -73,9 +74,11 @@ def check_signup_pw():
     email = request.form.get('email')
     username = request.form.get('username')
     password = request.form.get('pw')
+    date_created = datetime.now()
 
     user = User(email=email, username=username, 
-                password=password, fname=fname, lname=lname)
+                password=password, fname=fname, lname=lname,
+                date_created=date_created)
 
     db.session.add(user)
     db.session.commit()
@@ -94,11 +97,13 @@ def set_home():
 
     home_lat = request.form.get('lat')
     home_long = request.form.get('long')
+    home_address = request.form.get('address')
 
     user = User.query.filter(User.username == session['user']).one()
 
     setattr(user, 'home_lat', home_lat)
     setattr(user, 'home_long', home_long)
+    setattr(user, 'home_address', home_address)
 
     db.session.commit()
 
@@ -352,6 +357,16 @@ def get_location_information(location_id):
 
     return render_template('location_info.html', location_info=location_info, 
                             location_logs=location_logs)
+
+@app.route('/profile/<username>/view-profile')
+def view_profile(username):
+
+    user = User.query.filter(User.username == username).one()
+
+    num_logs = Log.query.filter(Log.user_id == user.user_id).all()
+    num_logs = len(num_logs)
+
+    return render_template('view_profile.html', user=user, username=username, num_logs=num_logs)
 
 
 ###################
