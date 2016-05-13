@@ -34,6 +34,9 @@ class Location(db.Model):
     longitude = db.Column(db.String(40), nullable=False)
     address = db.Column(db.String(500), nullable=False)
     name = db.Column(db.String(100), nullable = False)
+    website = db.Column(db.String(200))
+    phone = db.Column(db.String(200))
+
 
 class Log(db.Model):
 
@@ -53,7 +56,8 @@ class Log(db.Model):
 
     user = db.relationship('User', backref=db.backref('logs'))
 
-    location = db.relationship('Location', backref=db.backref('logs'))
+    location = db.relationship('Location', backref=db.backref('logs'), 
+                                order_by='desc(Location.name)')
 
 class Type(db.Model):
 
@@ -71,7 +75,8 @@ class LocationType (db.Model):
                                             nullable=False)
     type_id = db.Column(db.Integer, db.ForeignKey('types.type_id'), nullable=False)
 
-    location = db.relationship('Location', backref=db.backref('locationtypes'))
+    location = db.relationship('Location', backref=db.backref('locationtypes'), 
+                            order_by='desc(Location.name)')
 
     location_type = db.relationship('Type', backref=db.backref('locationtypes'))
 

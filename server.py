@@ -122,8 +122,11 @@ def profile_page(username):
     user_logs = Log.query.filter(Log.user_id == user.user_id,
                                 Log.visit_date == unicode(date_of_logs)).all()
 
-    return render_template('profile_page.html', username=username, 
-                        current_date=current_date, user_logs=user_logs, google_location_api=google_location_api)
+    return render_template('profile_page.html', 
+                            username=username, 
+                            user=user,
+                            current_date=current_date, 
+                            google_location_api=google_location_api)
 
 
 @app.route('/profile/<username>/add-location')
@@ -135,7 +138,7 @@ def add_location(username):
 @app.route('/profile/<username>/view-locations')
 def view_locations(username):
 
-    return
+    return render_template('view_locations.html')
 
 @app.route('/log-new-location', methods=['POST'])
 def log_new_location():
@@ -153,11 +156,18 @@ def log_new_location():
     created_at = datetime.now()
     comments = request.form.get('comments')
     place_types = request.form.get('place_types').split(',')
+    website = request.form.get('website')
+    if website == None:
+        website = 'N/A'
+    phone = request.form.get('phone')
+    if phone == None:
+        phone = 'N/A'
 
     user = User.query.filter(User.username == session['user']).one()
 
     location = Location(location_id=location_id, latitude=latitude,
-                        longitude=longitude, address=address, name=name)
+                        longitude=longitude, address=address, name=name,
+                        website=website, phone=phone)
 
     # create location id
     try:
@@ -207,6 +217,39 @@ def log_new_location():
     db.session.commit()
 
     return "True"
+
+
+@app.route('/load_today')
+def load_today():
+    """Load today's information"""
+
+    current_date = datetime.now().strftime('%A, %B %d, %Y')
+    date_of_logs = datetime.now().strftime('%Y-%m-%d')
+
+    user = User.query.filter(User.username == session['user']).one()
+
+    user_logs = Log.query.filter(Log.user_id == user.user_id,
+                                Log.visit_date == unicode(date_of_logs)).all()
+    logs = {
+        log.log_id: {
+            'locationId': log.location_id,
+            'visitDate': log.visit_date,
+            'arrived': log.arrived,
+            'departed': log.departed,
+            'comments': log.comments,
+            'title': log.title,
+            'user': log.user_id,
+            'locationLat': log.location.latitude,
+            'locationLong': log.location.longitude,
+            'log_id': log.log_id
+        }
+        for log in Log.query.filter(Log.user_id == user.user_id,
+                                Log.visit_date == unicode(date_of_logs)).all()}
+
+    info = {'date': current_date,
+            'logs': logs}
+
+    return jsonify(info)
 
 
 @app.route('/change-previous-day', methods=['POST'])
@@ -272,6 +315,43 @@ def change_next_day():
 
 
     return jsonify(info)
+
+
+@app.route('/location-directory')
+def location_directy():
+    """List all locations in user's logs"""
+    
+    user = User.query.filter(User.username == session['user']).one()
+
+    locations = {
+        log.location.name+log.location.location_id: {
+            'name': log.location.name,
+            'address': log.location.address,
+            'locationId': log.location.location_id,
+            'lat': log.location.latitude,
+            'long': log.location.longitude
+        }
+
+        for log in Log.query.filter(Log.user_id == user.user_id)
+                    .all()}
+
+    return jsonify(locations)
+
+@app.route('/<location_id>')
+def get_location_information(location_id):
+    """Display logs and location information"""
+
+    user = User.query.filter(User.username == session['user']).one()
+
+    print "******************", type(location_id), location_id
+
+    location_logs = Log.query.filter(Log.user_id == user.user_id, Log.location_id == location_id).all()
+
+    location_info = Location.query.filter(Location.location_id == location_id).one()
+
+
+    return render_template('location_info.html', location_info=location_info, 
+                            location_logs=location_logs)
 
 
 ###################

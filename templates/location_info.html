@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{{ location_info.name }}</h1>
+<h4>{{ location_info.address }}</h4>
+<p>Phone: {{ location_info.phone }}</p>
+{% if location_info.website != 'N/A' %}
+<p><a href={{ location_info.website }}>Visit Website</a></p>
+{% endif %}
+
+<div><h3>Logs</h3>
+
+{% for log in location_logs %}
+<ul> <b>{{ log.title }}</b>, {{ log.visit_date}} </p>
+<li>Arrived: {{ log.arrived }}</li>
+<li>Departed: {{ log.departed }}</li>
+<li>Comments: {{ log.comments }}</li>
+<li>Created: {{ log.created_at}}</li>
+</ul>
+{% endfor %}
+
+</div>
+
+{% endblock %}

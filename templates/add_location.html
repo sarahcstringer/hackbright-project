@@ -137,12 +137,16 @@
 
           var addLocation = {'lat': place.geometry.location.lat(),
                     'long': place.geometry.location.lng(),
-                    'address': address,
+                    'address': place.formatted_address,
                     'location_id': place.place_id,
                     'name': place.name,
+                    'phone': place.formatted_phone_number,
+                    'website': place.website,
                     'place_types': JSON.stringify(place.types)}
 
-        console.log(place.types)
+          console.log(typeof(place.website));
+          console.log(place.formatted_phone_number);
+          console.log(place.formatted_address);
 
 
         $('#verify').on('click', function() {

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<button id='back' name='back'>Back to Profile</button>
+
+<h1>Location Directory</h1>
+<button id='sortAlpha' name='sortAlpha' style='display:inline'>List</button>
+<button id='mapView' name='mapView' style='display:inline'>Map</button><br><br>
+
+<div id='locationDirectory'></div>
+<div id="googleMap" style="width:500px;height:380px;"></div>
+
+<script> 
+
+$( document ).ready(function() {
+    $.get('/location-directory', function(data) {
+
+    var location, marker, html;
+
+    for (var key in data) {
+      location = data[key];
+
+      var newDiv = document.createElement('div');
+      newDiv.id = location.locationId
+
+      html = ('<div>' +
+        '<p><b><a href="/'+ location.locationId+'">' + location.name + '</a></b></p>' +
+        '<p style="padding-left:1em">' + location.address + '</p>' +
+        '</div>');
+
+      newDiv.innerHTML = html
+
+      $('#locationDirectory').append(newDiv)
+
+    }
+///////////////////////////////////////////
+    function initialize() {
+
+
+        function removeMarkers(){
+        for(i=0; i<markers.length; i++){
+            markers[i].setMap(null);
+            }
+        }
+
+
+      function bindInfoWindow(marker, map, infoWindow, html) {
+        google.maps.event.addListener(marker, 'click', function () {
+          infoWindow.close();
+          infoWindow.setContent(html);
+          infoWindow.open(map, marker);
+        });
+      }
+
+
+    var homeLatLng = {lat: {{session['home_lat']}}, lng: {{session['home_long']}}};
+    var mapProp = {
+    center:new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}}),
+    zoom:10,
+    mapTypeId:google.maps.MapTypeId.ROADMAP
+    };
+    var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+
+    var markers = [];
+
+    var infoWindow = new google.maps.InfoWindow({
+    width: 150});
+
+    removeMarkers();
+
+    for (var key in data) {
+      location = data[key];
+
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(location.lat, location.long),
+        map: map,
+        title: location.name
+      });
+
+        html = (
+      '<div class="window-content">' +
+          '<p><b>' + location.name + '</b></p>' +
+          '<p>' + location.address + '</p>' +
+      '</div>');
+
+      markers.push(marker);
+
+      bindInfoWindow(marker, map, infoWindow, html)
+    }
+
+  };
+
+$('#mapView').on('click', function() {
+    $('#googleMap').show()
+    $('#locationDirectory').html('')
+    initialize();
+
+
+})
+})
+})
+
+
+</script>
+
+<script>
+$('#sortAlpha').on('click', function() {
+    $('#googleMap').hide()
+    $.get('/location-directory', function(data) {
+
+    var location, marker, html;
+
+    for (var key in data) {
+      location = data[key];
+
+      var newDiv = document.createElement('div');
+      newDiv.id = location.locationId
+
+      html = ('<div>' +
+        '<p><b>' + location.name + '</b></p>' +
+        '<p style="padding-left:1em">' + location.address + '</p>' +
+        '</div>');
+
+      newDiv.innerHTML = html
+
+      $('#locationDirectory').append(newDiv)
+
+    }
+})
+})
+</script>
+
+
+<script>
+    $('#back').on('click', function() {
+        window.location.href = ('/')
+    })
+</script>
+
+
+{% endblock %}
