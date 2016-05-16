@@ -6,7 +6,7 @@ from jinja2 import StrictUndefined
 from model import connect_to_db, db, User, Log, Location, Type, LocationType 
 from datetime import datetime, timedelta
 import os
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, desc
 
 app = Flask(__name__)
 
@@ -86,9 +86,18 @@ def check_signup_pw():
     session['user'] = username
     print session['user']
     return render_template('profile.html', fname=fname, lname=lname,
-                            email=email, username=username, 
-                            google_location_api=google_location_api)
+                            email=email, username=username)
 
+@app.route('/check-username', methods=['POST'])
+def check_username():
+
+    username = request.form.get('username')
+
+    try:
+        User.query.filter(User.username == username).one()
+        return 'True'
+    except:
+        return 'False'
 
 
 @app.route('/set-home', methods=['POST'])
@@ -98,12 +107,14 @@ def set_home():
     home_lat = request.form.get('lat')
     home_long = request.form.get('long')
     home_address = request.form.get('address')
+    home_id = request.form.get('home_id')
 
     user = User.query.filter(User.username == session['user']).one()
 
     setattr(user, 'home_lat', home_lat)
     setattr(user, 'home_long', home_long)
     setattr(user, 'home_address', home_address)
+    setattr(user, 'home_id', home_id)
 
     db.session.commit()
 
@@ -124,9 +135,6 @@ def profile_page(username):
 
     user = User.query.filter(User.username == username).one() 
 
-    user_logs = Log.query.filter(Log.user_id == user.user_id,
-                                Log.visit_date == unicode(date_of_logs)).all()
-
     return render_template('profile_page.html', 
                             username=username, 
                             user=user,
@@ -137,11 +145,14 @@ def profile_page(username):
 @app.route('/profile/<username>/add-location')
 def add_location(username):
 
-    return render_template('add_location.html', 
-                    google_location_api=google_location_api)
+    user = User.query.filter(User.username == username).one()
+
+    return render_template('add_location.html', user=user)
 
 @app.route('/profile/<username>/view-locations')
 def view_locations(username):
+
+    # location_types = 
 
     return render_template('view_locations.html')
 
@@ -233,8 +244,6 @@ def load_today():
 
     user = User.query.filter(User.username == session['user']).one()
 
-    user_logs = Log.query.filter(Log.user_id == user.user_id,
-                                Log.visit_date == unicode(date_of_logs)).all()
     logs = {
         log.log_id: {
             'locationId': log.location_id,
@@ -334,7 +343,8 @@ def location_directy():
             'address': log.location.address,
             'locationId': log.location.location_id,
             'lat': log.location.latitude,
-            'long': log.location.longitude
+            'long': log.location.longitude,
+            'loc_types': str([loc_type.location_type.type_name.replace('_', ' ') for loc_type in log.location.locationtypes])
         }
 
         for log in Log.query.filter(Log.user_id == user.user_id)
@@ -342,7 +352,7 @@ def location_directy():
 
     return jsonify(locations)
 
-@app.route('/<location_id>')
+@app.route('/profile/location-info/<location_id>')
 def get_location_information(location_id):
     """Display logs and location information"""
 
@@ -350,7 +360,7 @@ def get_location_information(location_id):
 
     print "******************", type(location_id), location_id
 
-    location_logs = Log.query.filter(Log.user_id == user.user_id, Log.location_id == location_id).all()
+    location_logs = Log.query.filter(Log.user_id == user.user_id, Log.location_id == location_id).order_by(desc(Log.visit_date)).all()
 
     location_info = Location.query.filter(Location.location_id == location_id).one()
 

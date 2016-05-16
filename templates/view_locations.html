@@ -6,6 +6,7 @@
 <h1>Location Directory</h1>
 <button id='sortAlpha' name='sortAlpha' style='display:inline'>List</button>
 <button id='mapView' name='mapView' style='display:inline'>Map</button><br><br>
+<button id='listCategory' name='listCategory'>List by Category</button><br><br>
 
 <div id='locationDirectory'></div>
 <div id="googleMap" style="width:500px;height:380px;"></div>
@@ -24,7 +25,7 @@ $( document ).ready(function() {
       newDiv.id = location.locationId
 
       html = ('<div>' +
-        '<p><b><a href="/'+ location.locationId+'">' + location.name + '</a></b></p>' +
+        '<p><b><a href="/profile/location-info/'+ location.locationId+'">' + location.name + '</a></b></p>' +
         '<p style="padding-left:1em">' + location.address + '</p>' +
         '</div>');
 
@@ -53,7 +54,10 @@ $( document ).ready(function() {
       }
 
 
-    var homeLatLng = {lat: {{session['home_lat']}}, lng: {{session['home_long']}}};
+    var bounds = new google.maps.LatLngBounds();
+    var home = new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}})
+    bounds.extend(home)
+
     var mapProp = {
     center:new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}}),
     zoom:10,
@@ -84,28 +88,26 @@ $( document ).ready(function() {
       '</div>');
 
       markers.push(marker);
-
+      bounds.extend(marker.position);
       bindInfoWindow(marker, map, infoWindow, html)
     }
-
+    map.fitBounds(bounds);
   };
 
 $('#mapView').on('click', function() {
     $('#googleMap').show()
+    $('#listCategory').hide()
     $('#locationDirectory').html('')
     initialize();
-
-
 })
 })
 })
-
-
 </script>
 
 <script>
 $('#sortAlpha').on('click', function() {
     $('#googleMap').hide()
+    $('#listCategory').show()
     $.get('/location-directory', function(data) {
 
     var location, marker, html;
@@ -116,22 +118,18 @@ $('#sortAlpha').on('click', function() {
       var newDiv = document.createElement('div');
       newDiv.id = location.locationId
 
-      html = ('<div>' +
-        '<p><b>' + location.name + '</b></p>' +
+        html = ('<div>' +
+        '<p><b><a href="/profile/location-info/'+ location.locationId+'">' + location.name + '</a></b></p>' +
         '<p style="padding-left:1em">' + location.address + '</p>' +
         '</div>');
 
       newDiv.innerHTML = html
-
       $('#locationDirectory').append(newDiv)
 
     }
 })
 })
-</script>
 
-
-<script>
     $('#back').on('click', function() {
         window.location.href = ('/')
     })

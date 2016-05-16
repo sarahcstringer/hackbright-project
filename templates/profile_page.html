@@ -3,7 +3,7 @@
 
 <script>
 
-// Create the map to display (here's, I think, where I need to create markers)
+// Create the map to display 
 
 function initialize() {
 
@@ -26,6 +26,7 @@ function initialize() {
 // Change the header date to the new date, one day earlier
     
     var bounds = new google.maps.LatLngBounds();
+    {{session['home_lat']}}
     var home = new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}})
     bounds.extend(home)
     var infoWindow = new google.maps.InfoWindow({
@@ -50,14 +51,15 @@ function initialize() {
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 
         '<p>Comments: ' + log.comments + '</p>' +
-        '<p>User: ' + log.user + '</p>' +
-        '</div>');
+        '</div><button style="display:inline" id=edit'+log.log_id+'>Edit</button>'
+        );
 
-      newDiv.innerHTML = html
+      newDiv.innerHTML = html;
 
-      $('#logs').append(newDiv)
+      $('#logs').append(newDiv);
 
       marker = new google.maps.Marker({
+        // do I do an if statement here? If this marker is in the list of markers already...?
         position: new google.maps.LatLng(log.locationLat, log.locationLong),
         map: map,
         title: log.title
@@ -69,7 +71,14 @@ function initialize() {
 
       bindInfoWindow(marker, map, infoWindow, html)
     }
-  map.fitBounds(bounds);
+
+      if (((bounds['H']['H'] != {{session['home_lat']}}) && (bounds['H']['j'] != {{session['home_long']}})) || ((bounds['j']['H'] != {{session['home_lat']}}) && (bounds['j']['j'] != {{session['home_long']}}))) {
+        map.fitBounds(bounds);
+    } else {
+      map.setZoom(10)
+      map.setCenter(home)
+    }
+    bounds = [];
   };
 
 

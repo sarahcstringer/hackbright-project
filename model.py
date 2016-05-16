@@ -20,6 +20,7 @@ class User(db.Model):
     home_lat = db.Column(db.String(40), nullable=True)
     home_long = db.Column(db.String(40), nullable=True)
     home_address = db.Column(db.String(250), nullable=True)
+    home_id = db.Column(db.String(100), nullable=True)
     work_address = db.Column(db.String(250), nullable=True)
     work_lat = db.Column(db.String(40), nullable=True)
     work_long = db.Column(db.String(40), nullable=True)
@@ -34,7 +35,7 @@ class Location(db.Model):
 
     __tablename__ = 'locations'
 
-    location_id = db.Column(db.String(40), primary_key=True)
+    location_id = db.Column(db.String(100), primary_key=True)
     latitude = db.Column(db.String(40), nullable=False)
     longitude = db.Column(db.String(40), nullable=False)
     address = db.Column(db.String(500), nullable=False)
@@ -54,7 +55,7 @@ class Log(db.Model):
     log_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), 
                                                         nullable=False)
-    location_id = db.Column(db.String(40), db.ForeignKey('locations.location_id'), 
+    location_id = db.Column(db.String(100), db.ForeignKey('locations.location_id'), 
                                                         nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     visit_date = db.Column(db.String(20), nullable=False)
@@ -88,7 +89,7 @@ class LocationType (db.Model):
     __tablename__ = 'location_types'
 
     loc_type_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    location_id = db.Column(db.String(40), db.ForeignKey('locations.location_id'),
+    location_id = db.Column(db.String(100), db.ForeignKey('locations.location_id'),
                                             nullable=False)
     type_id = db.Column(db.Integer, db.ForeignKey('types.type_id'), nullable=False)
 

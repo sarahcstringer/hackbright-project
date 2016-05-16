@@ -9,6 +9,12 @@
 <p><a href={{ location_info.website }}>Visit Website</a></p>
 {% endif %}
 
+<!-- <ul>Location Type:
+{% for loc_type in location_info.locationtypes %}
+    <li>{{ loc_type.location_type.type_name }}</li>
+{% endfor %}
+</ul>
+ -->
 <div><h3>Logs</h3>
 
 {% for log in location_logs %}

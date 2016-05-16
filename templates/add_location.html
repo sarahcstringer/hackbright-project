@@ -2,6 +2,10 @@
 {% block content %}
 
   <p>Add location:</p> 
+
+  <input id='home' type='radio' name='setloc' value='Home'>Home
+  <input id='other' type='radio' name='setloc' value='Other'>Other
+
     <input id="pac-input" class="controls" type="text"
         placeholder="Enter a location">
     <div id="map"></div>
@@ -15,7 +19,9 @@
       
     </div>
 
-    <button name='verify' value='verify' id='verify'>Add Location</button>
+    <button name='addLocation' id='addLocation'>Add Location</button>
+
+
     <script>
 
   function initialize() {
@@ -31,6 +37,8 @@
 
     var input = /** @type {HTMLInputElement} */(
         document.getElementById('pac-input'));
+
+    
 
     // Create the autocomplete helper, and associate it with
     // an HTML text input box.
@@ -83,7 +91,7 @@
                       'website': place.website,
                       'place_types': JSON.stringify(place.types)}
 
-          $('#verify').on('click', function() {
+          $('#addLocation').on('click', function() {
             addLocation.title = $('#title').val()
             addLocation.arrival = $('#arrival').val()
             addLocation.departure = $('#departure').val()
@@ -102,4 +110,6 @@
   // Run the initialize function when the window has finished loading.
   google.maps.event.addDomListener(window, 'load', initialize);
     </script>
+
+
 {% endblock %}
