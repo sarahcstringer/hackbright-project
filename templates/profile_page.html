@@ -45,20 +45,19 @@ function initialize() {
       var newDiv = document.createElement('div');
       newDiv.id = log.log_id
 
-      htmlDiv = ('<p><b>Title: </b>' + log.title + '</p>' +
+      htmlDiv = ('<div class="'+ log.locationId + '">' +
+        '<p><b>Title: </b>' + log.title + '</p>' +
         '<p>Location: '+log.locationName +'</p>' +
         '<p><b>Date: </b>' + log.visitDate + '</p>' +
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 
         '<p>Comments: ' + log.comments + '</p>' +
-        '</div><button style="display:inline" class="editDivButton" id="editdiv'+log.log_id+'">Edit</button>'
+        '<button style="display:inline" class="editDivButton" id="editdiv'+log.log_id+'">Edit</button></div>'
         );
 
       htmlInfo = ('<div>' +
-        '<p><b>Title: </b>' + log.title + '</p>' +
-        '<p>Arrived: ' + log.arrived + '</p>' +
-        '<p>Departed: ' + log.departed + '</p>' + 
-        '<p>Comments: ' + log.comments + '</p>' +
+        '<p><b>Name: </b>' + log.locationName + '</p>' +
+        '<p>Address: ' + log.locationAddress + '</p>' +
         '</div><button style="display:inline" class = "editInfoButton" id="editinfo'+log.log_id+'">Edit</button>'
         );
 
@@ -66,56 +65,69 @@ function initialize() {
 
       $('#logs').append(newDiv);
 
-      // marker = new google.maps.Marker({
-      //   position: new google.maps.LatLng(log.locationLat, log.locationLong),
-      //   map: map,
-      //   title: log.locationName
-      //   });
-      // marker.metadata = {type: "point", id: log.locationId};
-      // console.log('marker'+marker.metadata['id']);
-      // console.log('pre-markers'+markers);
-      // markers.push(marker);
-      // console.log('post-markers'+markers)
-      // bounds.extend(marker.position)
-      // bindInfoWindow(marker, map, infoWindow, htmlInfo)
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(log.locationLat, log.locationLong),
+        map: map,
+        title: log.locationName,
+        animation: google.maps.Animation.DROP
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          $('.'+this.metadata['id']).fadeToggle()})
+
+      marker.metadata = {type: "point", id: log.locationId};
+      markers.push(marker);
+      bounds.extend(marker.position)
+      bindInfoWindow(marker, map, infoWindow, htmlInfo)
 
 
-
-
-// try if statement here, to check and see if the marker is already in the list of markers
-
-
-
-
-      if (markers.length !== 0) {
-        for (var i=0; i<markers.length; i++) {
-        if (markers[i].metadata['id'] !== log.locationId) {
-          marker = new google.maps.Marker({
-            position: new google.maps.LatLng(log.locationLat, log.locationLong),
-            map: map,
-            title: log.locationName
-          });
-          marker.metadata = {type: "point", id: log.locationId};
-          markers.push(marker);
-          bounds.extend(marker.position);
-          bindInfoWindow(marker, map, infoWindow, htmlInfo)
-        }
-         else {
-          bindInfoWindow(markers[i], map, infoWindow, htmlInfo)}
-      }
-        } else {
-          marker = new google.maps.Marker({
-            position: new google.maps.LatLng(log.locationLat, log.locationLong),
-            map: map,
-            title: log.locationName
-          });
-          marker.metadata = {type: "point", id: log.locationId};
-          markers.push(marker);
-          bounds.extend(marker.position);
-          bindInfoWindow(marker, map, infoWindow, htmlInfo)
-        }
+    //   // If there are already markers in the list
+    //   if (markers.length !== 0) {
+    //     // loop through the markers in the list
+    //     for (var i=0; i<markers.length; i++) {
+    //       // if the metadata for that marker does not match the location id of this current location
+    //     if (markers[i].metadata['id'] !== log.locationId) {
+    //       // create a new marker for that location
+    //       marker = new google.maps.Marker({
+    //         position: new google.maps.LatLng(log.locationLat, log.locationLong),
+    //         map: map,
+    //         title: log.locationName
+    //       });
+    //       // add metadata to the marker
+    //       marker.metadata = {type: "point", id: log.locationId};
+    //       // add the marker to the marker list
+    //       markers.push(marker);
+    //       // extend the bounds of the map to include that marker
+    //       bounds.extend(marker.position);
+    //       // bind the infowindow to the marker
+    //       bindInfoWindow(marker, map, infoWindow, htmlInfo)
+    //     }
+    //     // if there is already a marker with that metadata
+    //      else {
+    //       console.log('This marker already exists'+i);
+    //       console.log(markers[i].metadata['id']);
+    //       console.log(markers[i].title);
+    //       console.log(markers[1]);
+    //   }
+    //   // if there are not markers in the list, create the first marker (same procedure as above)
+    //     }} else {
+    //       console.log('creating a new marker')
+    //       marker = new google.maps.Marker({
+    //         position: new google.maps.LatLng(log.locationLat, log.locationLong),
+    //         map: map,
+    //         title: log.locationName
+    //       });
+    //       console.log(marker.title)
+    //       marker.metadata = {type: "point", id: log.locationId};
+    //       markers.push(marker);
+    //       bounds.extend(marker.position);
+    //       bindInfoWindow(marker, map, infoWindow, htmlInfo)
+    //     }
     }
 
+
+    // setting boundaries of map; if there are no locations logged, setting zoom to 10 and
+    // centering on home location
       if (((bounds['H']['H'] != {{session['home_lat']}}) && (bounds['H']['j'] != {{session['home_long']}})) || ((bounds['j']['H'] != {{session['home_lat']}}) && (bounds['j']['j'] != {{session['home_long']}}))) {
         map.fitBounds(bounds);
     } else {
