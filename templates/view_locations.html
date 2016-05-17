@@ -6,7 +6,7 @@
 <h1>Location Directory</h1>
 <button id='sortAlpha' name='sortAlpha' style='display:inline'>List</button>
 <button id='mapView' name='mapView' style='display:inline'>Map</button><br><br>
-<button id='listCategory' name='listCategory'>List by Category</button><br><br>
+<!-- <button id='listCategory' name='listCategory'>List by Category</button><br><br> -->
 <input type='text' id='searchLocations' placeholder="Search for location">
 <div id='locationDirectory'></div>
 <div id='searchResults'></div>
@@ -96,18 +96,25 @@ $( document ).ready(function() {
   };
 
 $('#mapView').on('click', function() {
-    $('#googleMap').show()
-    $('#listCategory').hide()
-    $('#locationDirectory').html('')
+    $('#googleMap').show();
+    $('#searchResults').hide();
+    $('#searchLocations').hide();
+    $('#listCategory').hide();
+    $('#locationDirectory').html('');
     initialize();
 })
 })
 })
 </script>
 
+<!-- ////////////////////////////////////////////////////////  -->
+
 <script>
 $('#sortAlpha').on('click', function() {
-    $('#googleMap').hide()
+    $('#googleMap').hide();
+    $('#searchLocations').show();
+    $('#locationDirectory').html('');
+    $('#locationDirectory').show();
     $('#listCategory').show()
     $.get('/location-directory', function(data) {
 
@@ -139,7 +146,9 @@ $('#sortAlpha').on('click', function() {
 <script>
   $('#searchLocations').keyup(function() {
     $('#locationDirectory').hide();
+    $('#searchLocations').show();
     $('#searchResults').show();
+    $('#googleMap').hide();
     var searchTerms = {'search': $('#searchLocations').val().toLowerCase()}
 
     $.post('/search-location-directory', searchTerms, function(data) {

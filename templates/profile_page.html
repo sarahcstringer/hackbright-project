@@ -39,8 +39,20 @@ function initialize() {
 
     var log, marker, htmlInfo, htmlDiv;
 
-    for (var key in data.logs) {
-      log = data.logs[key];
+    // Sort the logs by time
+
+    // var numLogs = [Object.keys(data.logs)];
+    // console.log(numLogs[0])
+    // numLogs = numLogs[0]
+    // var test2 = []
+    // for (var i = 0; i < numLogs.length; i++) {
+    //   test2.push(data.logs[numLogs[i]].arrived)
+    //   }
+    
+    // console.log(test2.sort())
+
+    for (var i = 0; i<data.logs.length; i++) {
+      log = data.logs[i];
 
       var newDiv = document.createElement('div');
       newDiv.id = log.log_id
@@ -79,52 +91,7 @@ function initialize() {
       markers.push(marker);
       bounds.extend(marker.position)
       bindInfoWindow(marker, map, infoWindow, htmlInfo)
-
-
-    //   // If there are already markers in the list
-    //   if (markers.length !== 0) {
-    //     // loop through the markers in the list
-    //     for (var i=0; i<markers.length; i++) {
-    //       // if the metadata for that marker does not match the location id of this current location
-    //     if (markers[i].metadata['id'] !== log.locationId) {
-    //       // create a new marker for that location
-    //       marker = new google.maps.Marker({
-    //         position: new google.maps.LatLng(log.locationLat, log.locationLong),
-    //         map: map,
-    //         title: log.locationName
-    //       });
-    //       // add metadata to the marker
-    //       marker.metadata = {type: "point", id: log.locationId};
-    //       // add the marker to the marker list
-    //       markers.push(marker);
-    //       // extend the bounds of the map to include that marker
-    //       bounds.extend(marker.position);
-    //       // bind the infowindow to the marker
-    //       bindInfoWindow(marker, map, infoWindow, htmlInfo)
-    //     }
-    //     // if there is already a marker with that metadata
-    //      else {
-    //       console.log('This marker already exists'+i);
-    //       console.log(markers[i].metadata['id']);
-    //       console.log(markers[i].title);
-    //       console.log(markers[1]);
-    //   }
-    //   // if there are not markers in the list, create the first marker (same procedure as above)
-    //     }} else {
-    //       console.log('creating a new marker')
-    //       marker = new google.maps.Marker({
-    //         position: new google.maps.LatLng(log.locationLat, log.locationLong),
-    //         map: map,
-    //         title: log.locationName
-    //       });
-    //       console.log(marker.title)
-    //       marker.metadata = {type: "point", id: log.locationId};
-    //       markers.push(marker);
-    //       bounds.extend(marker.position);
-    //       bindInfoWindow(marker, map, infoWindow, htmlInfo)
-    //     }
     }
-
 
     // setting boundaries of map; if there are no locations logged, setting zoom to 10 and
     // centering on home location
@@ -146,13 +113,6 @@ function initialize() {
   };
   // Creating map variable
   var map=new google.maps.Map(document.getElementById("map"),mapProp);
-
-// Set home marker
-  // var marker=new google.maps.Marker({
-  //   position: homeLatLng,
-  //   map: map,
-  //   icon:'/static/img/bighouseicon.png'
-  // })
 
   var markers = [];
 

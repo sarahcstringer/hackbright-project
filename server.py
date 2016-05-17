@@ -251,9 +251,7 @@ def load_today():
 
     user = User.query.filter(User.username == session['user']).one()
 
-    logs = {
-        log.log_id: {
-            'locationId': log.location_id,
+    logs = [{'locationId': log.location_id,
             'locationName': log.location.name,
             'locationAddress': log.location.address,
             'visitDate': log.visit_date,
@@ -267,7 +265,9 @@ def load_today():
             'log_id': log.log_id
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
-                                Log.visit_date == unicode(date_of_logs)).all()}
+                                Log.visit_date == unicode(date_of_logs))
+                                .order_by(Log.arrived)
+                                .all()]
 
     info = {'date': current_date,
             'logs': logs}
@@ -286,9 +286,7 @@ def change_previous_day():
 
     user = User.query.filter(User.username == session['user']).one()
 
-    logs = {
-        log.log_id: {
-            'locationId': log.location_id,
+    logs = [{'locationId': log.location_id,
             'locationName': log.location.name,
             'locationAddress': log.location.address,
             'visitDate': log.visit_date,
@@ -302,7 +300,9 @@ def change_previous_day():
             'log_id': log.log_id
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
-                                Log.visit_date == unicode(date_of_logs)).all()}
+                                Log.visit_date == unicode(date_of_logs))
+                                .order_by(Log.arrived)
+                                .all()]
 
     info = {'date': previous_day.strftime('%A, %B %d, %Y'),
             'logs': logs}
@@ -319,9 +319,7 @@ def change_next_day():
 
     user = User.query.filter(User.username == session['user']).one()
 
-    logs = {
-        log.log_id: {
-            'locationId': log.location_id,
+    logs = [{'locationId': log.location_id,
             'locationName': log.location.name,
             'locationAddress': log.location.address,
             'visitDate': log.visit_date,
@@ -335,7 +333,9 @@ def change_next_day():
             'log_id': log.log_id
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
-                                Log.visit_date == unicode(date_of_logs)).all()}
+                                Log.visit_date == unicode(date_of_logs))
+                                .order_by(Log.arrived)
+                                .all()]
 
     info = {'date': next_day.strftime('%A, %B %d, %Y'),
             'logs': logs}
@@ -350,20 +350,23 @@ def location_directory():
     
     user = User.query.filter(User.username == session['user']).one()
 
-    locations = {
-        log.location.name+log.location.location_id: {
-            'name': log.location.name,
-            'address': log.location.address,
-            'locationId': log.location.location_id,
+    logs = [{'locationId': log.location_id,
             'locationName': log.location.name,
             'locationAddress': log.location.address,
-            'lat': log.location.latitude,
-            'long': log.location.longitude,
-            'loc_types': str([loc_type.location_type.type_name.replace('_', ' ') for loc_type in log.location.locationtypes])
+            'visitDate': log.visit_date,
+            'arrived': log.arrived,
+            'departed': log.departed,
+            'comments': log.comments,
+            'title': log.title,
+            'user': log.user_id,
+            'locationLat': log.location.latitude,
+            'locationLong': log.location.longitude,
+            'log_id': log.log_id
         }
-
-        for log in Log.query.filter(Log.user_id == user.user_id)
-                    .all()}
+        for log in Log.query.filter(Log.user_id == user.user_id,
+                                Log.visit_date == unicode(date_of_logs))
+                                .order_by(Log.arrived)
+                                .all()]
 
     return jsonify(locations)
 
@@ -397,8 +400,6 @@ def get_location_information(location_id):
     """Display logs and location information"""
 
     user = User.query.filter(User.username == session['user']).one()
-
-    print "******************", type(location_id), location_id
 
     location_logs = Log.query.filter(Log.user_id == user.user_id, Log.location_id == location_id).order_by(desc(Log.visit_date)).all()
 
