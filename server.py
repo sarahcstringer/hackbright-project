@@ -131,8 +131,6 @@ def profile_page(username):
 
     current_date = datetime.now().strftime('%A, %B %d, %Y')
 
-    date_of_logs = datetime.now().strftime('%Y-%m-%d')
-
     user = User.query.filter(User.username == username).one() 
 
     return render_template('profile_page.html', 
@@ -141,6 +139,15 @@ def profile_page(username):
                             current_date=current_date, 
                             google_location_api=google_location_api)
 
+
+@app.route('/set-date', methods=['POST'])
+def set_date():
+
+    date = request.form.get('date')
+    date = datetime.strptime(date, '%A, %B %d, %Y').strftime('%m/%d/%Y')
+    session['date'] = date
+
+    return 'true'
 
 @app.route('/profile/<username>/add-location')
 def add_location(username):
@@ -168,7 +175,7 @@ def log_new_location():
     title = request.form.get('title')
     arrived = request.form.get('arrival')
     departed = request.form.get('departure')
-    visit_date = request.form.get('date')
+    visit_date = datetime.strptime(request.form.get('date')[0:15], '%a %b %d %Y').strftime('%Y-%m-%d')
     created_at = datetime.now()
     comments = request.form.get('comments')
     place_types = request.form.get('place_types').split(',')
@@ -247,6 +254,8 @@ def load_today():
     logs = {
         log.log_id: {
             'locationId': log.location_id,
+            'locationName': log.location.name,
+            'locationAddress': log.location.address,
             'visitDate': log.visit_date,
             'arrived': log.arrived,
             'departed': log.departed,
@@ -280,6 +289,8 @@ def change_previous_day():
     logs = {
         log.log_id: {
             'locationId': log.location_id,
+            'locationName': log.location.name,
+            'locationAddress': log.location.address,
             'visitDate': log.visit_date,
             'arrived': log.arrived,
             'departed': log.departed,
@@ -311,6 +322,8 @@ def change_next_day():
     logs = {
         log.log_id: {
             'locationId': log.location_id,
+            'locationName': log.location.name,
+            'locationAddress': log.location.address,
             'visitDate': log.visit_date,
             'arrived': log.arrived,
             'departed': log.departed,
@@ -342,6 +355,8 @@ def location_directy():
             'name': log.location.name,
             'address': log.location.address,
             'locationId': log.location.location_id,
+            'locationName': log.location.name,
+            'locationAddress': log.location.address,
             'lat': log.location.latitude,
             'long': log.location.longitude,
             'loc_types': str([loc_type.location_type.type_name.replace('_', ' ') for loc_type in log.location.locationtypes])

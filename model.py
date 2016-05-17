@@ -58,7 +58,7 @@ class Log(db.Model):
     location_id = db.Column(db.String(100), db.ForeignKey('locations.location_id'), 
                                                         nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
-    visit_date = db.Column(db.String(20), nullable=False)
+    visit_date = db.Column(db.String(50), nullable=False)
     arrived = db.Column(db.String(20), nullable=False)
     departed = db.Column(db.String(20), nullable=False)
     comments = db.Column(db.Text, nullable=False)

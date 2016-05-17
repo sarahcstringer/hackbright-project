@@ -37,7 +37,7 @@ function initialize() {
     $('#logs').html('')
     removeMarkers();
 
-    var log, marker, html;
+    var log, marker, htmlInfo, htmlDiv;
 
     for (var key in data.logs) {
       log = data.logs[key];
@@ -45,31 +45,56 @@ function initialize() {
       var newDiv = document.createElement('div');
       newDiv.id = log.log_id
 
-      html = ('<div>' +
-        '<p><b>Title: </b>' + log.title + '</p>' +
+      htmlDiv = ('<p><b>Title: </b>' + log.title + '</p>' +
         '<p><b>Date: </b>' + log.visitDate + '</p>' +
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 
         '<p>Comments: ' + log.comments + '</p>' +
-        '</div><button style="display:inline" id=edit'+log.log_id+'>Edit</button>'
+        '</div><button style="display:inline" class="editDivButton" id="editdiv'+log.log_id+'">Edit</button>'
         );
 
-      newDiv.innerHTML = html;
+      htmlInfo = ('<div>' +
+        '<p><b>Title: </b>' + log.locationName + '</p>' +
+        '<p>Arrived: ' + log.arrived + '</p>' +
+        '<p>Departed: ' + log.departed + '</p>' + 
+        '<p>Comments: ' + log.comments + '</p>' +
+        '</div><button style="display:inline" class = "editInfoButton" id="editinfo'+log.log_id+'">Edit</button>'
+        );
+
+      newDiv.innerHTML = htmlDiv;
 
       $('#logs').append(newDiv);
 
-      marker = new google.maps.Marker({
-        // do I do an if statement here? If this marker is in the list of markers already...?
-        position: new google.maps.LatLng(log.locationLat, log.locationLong),
-        map: map,
-        title: log.title
-      });
+      
+          marker = new google.maps.Marker({
+            position: new google.maps.LatLng(log.locationLat, log.locationLong),
+            map: map,
+            title: log.locationName
+          });
+          marker.metadata = {type: "point", id: log.locationId};
+            markers.push(marker);
+      
+      // for (var i=0; i<markers.length; i++) {
+      //   if (markers[i].metadata['id'] === log.locationId) {
+      //     console.log('Already in')
+      //   }
+      //   else {
+      //     marker = new google.maps.Marker({
+      //       position: new google.maps.LatLng(log.locationLat, log.locationLong),
+      //       map: map,
+      //       title: log.locationName
+      //     });
+      //     marker.metadata = {type: "point", id: log.locationId};
+      //       markers.push(marker);
+      //   }
 
-      markers.push(marker);
+      //   }
+
+
 
       bounds.extend(marker.position);
 
-      bindInfoWindow(marker, map, infoWindow, html)
+      bindInfoWindow(marker, map, infoWindow, htmlInfo)
     }
 
       if (((bounds['H']['H'] != {{session['home_lat']}}) && (bounds['H']['j'] != {{session['home_long']}})) || ((bounds['j']['H'] != {{session['home_lat']}}) && (bounds['j']['j'] != {{session['home_long']}}))) {
@@ -103,9 +128,6 @@ function initialize() {
 
 // When page loads:
 $( document ).ready(function() {
-// Set info window variable
-
-// Get the day's logs through AJAX request
   $.get('/load_today', addMarkers)
 });
 
@@ -124,8 +146,8 @@ $('#next-day').on('click', function() {
 google.maps.event.addDomListener(window, 'load', initialize);
 
 
-
 </script>
+
 <!-- Create logout button -->
 <form action='/logout' style='display:inline'>
 <input type='submit' value='Logout'>
@@ -157,7 +179,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <script>
 var username = "{{session['user']}}";
     $('#addLocation').on('click', function(){
-    window.location.href = ('/profile/'+username+'/add-location')})
+    $.post('/set-date', {'date': $('#displayDate').html()}, function(data) {
+      window.location.href = ('/profile/'+username+'/add-location')})
+  })
 
 $('#viewLocations').on('click', function() {
   window.location.href = '/profile/'+username+'/view-locations'
@@ -173,6 +197,7 @@ $('#viewLocations').on('click', function() {
 
 
 </script>
+
 
 
 {% endblock %}

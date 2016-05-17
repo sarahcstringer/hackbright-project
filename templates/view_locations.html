@@ -7,8 +7,9 @@
 <button id='sortAlpha' name='sortAlpha' style='display:inline'>List</button>
 <button id='mapView' name='mapView' style='display:inline'>Map</button><br><br>
 <button id='listCategory' name='listCategory'>List by Category</button><br><br>
-
+<input type='text' id='searchLocations' placeholder="Search for location">
 <div id='locationDirectory'></div>
+<div id='searchResults'></div>
 <div id="googleMap" style="width:500px;height:380px;"></div>
 
 <script> 
@@ -133,6 +134,13 @@ $('#sortAlpha').on('click', function() {
     $('#back').on('click', function() {
         window.location.href = ('/')
     })
+</script>
+
+<script>
+  $('#searchLocations').keyup(function() {
+    $('#locationDirectory').hide();
+    $('#searchResults').show();
+  })
 </script>
 
 
