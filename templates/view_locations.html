@@ -140,6 +140,27 @@ $('#sortAlpha').on('click', function() {
   $('#searchLocations').keyup(function() {
     $('#locationDirectory').hide();
     $('#searchResults').show();
+    var searchTerms = {'search': $('#searchLocations').val().toLowerCase()}
+
+    $.post('/search-location-directory', searchTerms, function(data) {
+      $('#searchResults').html('');  
+      var location, html;
+
+      for (var key in data) {
+        location = data[key];
+
+        var newDiv = document.createElement('div');
+        newDiv.id = location.locationId
+
+          html = ('<div>' +
+          '<p><b><a href="/profile/location-info/'+ location.locationId+'">' + location.name + '</a></b></p>' +
+          '<p style="padding-left:1em">' + location.address + '</p>' +
+          '</div>');
+
+        newDiv.innerHTML = html
+        $('#searchResults').append(newDiv)
+    }
+  })
   })
 </script>
 

@@ -46,6 +46,7 @@ function initialize() {
       newDiv.id = log.log_id
 
       htmlDiv = ('<p><b>Title: </b>' + log.title + '</p>' +
+        '<p>Location: '+log.locationName +'</p>' +
         '<p><b>Date: </b>' + log.visitDate + '</p>' +
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 
@@ -54,7 +55,7 @@ function initialize() {
         );
 
       htmlInfo = ('<div>' +
-        '<p><b>Title: </b>' + log.locationName + '</p>' +
+        '<p><b>Title: </b>' + log.title + '</p>' +
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 
         '<p>Comments: ' + log.comments + '</p>' +
@@ -65,36 +66,54 @@ function initialize() {
 
       $('#logs').append(newDiv);
 
-      
+      // marker = new google.maps.Marker({
+      //   position: new google.maps.LatLng(log.locationLat, log.locationLong),
+      //   map: map,
+      //   title: log.locationName
+      //   });
+      // marker.metadata = {type: "point", id: log.locationId};
+      // console.log('marker'+marker.metadata['id']);
+      // console.log('pre-markers'+markers);
+      // markers.push(marker);
+      // console.log('post-markers'+markers)
+      // bounds.extend(marker.position)
+      // bindInfoWindow(marker, map, infoWindow, htmlInfo)
+
+
+
+
+// try if statement here, to check and see if the marker is already in the list of markers
+
+
+
+
+      if (markers.length !== 0) {
+        for (var i=0; i<markers.length; i++) {
+        if (markers[i].metadata['id'] !== log.locationId) {
           marker = new google.maps.Marker({
             position: new google.maps.LatLng(log.locationLat, log.locationLong),
             map: map,
             title: log.locationName
           });
           marker.metadata = {type: "point", id: log.locationId};
-            markers.push(marker);
-      
-      // for (var i=0; i<markers.length; i++) {
-      //   if (markers[i].metadata['id'] === log.locationId) {
-      //     console.log('Already in')
-      //   }
-      //   else {
-      //     marker = new google.maps.Marker({
-      //       position: new google.maps.LatLng(log.locationLat, log.locationLong),
-      //       map: map,
-      //       title: log.locationName
-      //     });
-      //     marker.metadata = {type: "point", id: log.locationId};
-      //       markers.push(marker);
-      //   }
-
-      //   }
-
-
-
-      bounds.extend(marker.position);
-
-      bindInfoWindow(marker, map, infoWindow, htmlInfo)
+          markers.push(marker);
+          bounds.extend(marker.position);
+          bindInfoWindow(marker, map, infoWindow, htmlInfo)
+        }
+         else {
+          bindInfoWindow(markers[i], map, infoWindow, htmlInfo)}
+      }
+        } else {
+          marker = new google.maps.Marker({
+            position: new google.maps.LatLng(log.locationLat, log.locationLong),
+            map: map,
+            title: log.locationName
+          });
+          marker.metadata = {type: "point", id: log.locationId};
+          markers.push(marker);
+          bounds.extend(marker.position);
+          bindInfoWindow(marker, map, infoWindow, htmlInfo)
+        }
     }
 
       if (((bounds['H']['H'] != {{session['home_lat']}}) && (bounds['H']['j'] != {{session['home_long']}})) || ((bounds['j']['H'] != {{session['home_lat']}}) && (bounds['j']['j'] != {{session['home_long']}}))) {

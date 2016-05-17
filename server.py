@@ -345,7 +345,7 @@ def change_next_day():
 
 
 @app.route('/location-directory')
-def location_directy():
+def location_directory():
     """List all locations in user's logs"""
     
     user = User.query.filter(User.username == session['user']).one()
@@ -366,6 +366,31 @@ def location_directy():
                     .all()}
 
     return jsonify(locations)
+
+@app.route('/search-location-directory', methods=['POST'])
+def search_location_directory():
+    """List all locations in user's logs"""
+    
+    user = User.query.filter(User.username == session['user']).one()
+    search_term = request.form.get('search')
+
+    locations = {
+        log.location.name+log.location.location_id: {
+            'name': log.location.name,
+            'address': log.location.address,
+            'locationId': log.location.location_id,
+            'locationName': log.location.name,
+            'locationAddress': log.location.address,
+            'lat': log.location.latitude,
+            'long': log.location.longitude,
+            'loc_types': str([loc_type.location_type.type_name.replace('_', ' ') for loc_type in log.location.locationtypes])
+        }
+
+        for log in db.session.query(Log).join(Location).filter(Log.user_id == user.user_id, func.lower(Location.name).like('%'+search_term+'%'))
+                    .all()}
+
+    return jsonify(locations)
+
 
 @app.route('/profile/location-info/<location_id>')
 def get_location_information(location_id):
