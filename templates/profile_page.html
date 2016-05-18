@@ -39,32 +39,21 @@ function initialize() {
 
     var log, marker, htmlInfo, htmlDiv;
 
-    // Sort the logs by time
-
-    // var numLogs = [Object.keys(data.logs)];
-    // console.log(numLogs[0])
-    // numLogs = numLogs[0]
-    // var test2 = []
-    // for (var i = 0; i < numLogs.length; i++) {
-    //   test2.push(data.logs[numLogs[i]].arrived)
-    //   }
-    
-    // console.log(test2.sort())
-
     for (var i = 0; i<data.logs.length; i++) {
       log = data.logs[i];
 
       var newDiv = document.createElement('div');
-      newDiv.id = log.log_id
+      newDiv.id = log.log_id;
+      newDiv.className = 'logDiv'
 
-      htmlDiv = ('<div class="'+ log.locationId + '">' +
+      htmlDiv = ('<div class="'+ log.locationId + ' individualLog" id="log'+log.log_id+'">' +
         '<p><b>Title: </b>' + log.title + '</p>' +
         '<p>Location: '+log.locationName +'</p>' +
         '<p><b>Date: </b>' + log.visitDate + '</p>' +
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 
-        '<p>Comments: ' + log.comments + '</p>' +
-        '<button style="display:inline" class="editDivButton" id="editdiv'+log.log_id+'">Edit</button></div>'
+        '<p>Comments: ' + log.comments + '</p></div>' +
+        '<button id="editlog'+log.log_id+'" hidden>Edit</button>'
         );
 
       htmlInfo = ('<div>' +
@@ -92,9 +81,23 @@ function initialize() {
       bounds.extend(marker.position)
       bindInfoWindow(marker, map, infoWindow, htmlInfo)
     }
+        $('.logDiv .individualLog').on('click', function() {
+          var thisID = $( this ).attr('id');
+          console.log(thisID);
+          $( this ).hide();
+          $('#edit'+thisID).show();
 
-    // setting boundaries of map; if there are no locations logged, setting zoom to 10 and
-    // centering on home location
+          $('#edit'+thisID).on('click', function() {
+            $( this ).hide();
+            console.log('hello');
+            $('#'+thisID).show();
+          })
+
+        });
+
+
+
+    // setting boundaries of map; if there are no locations logged, setting zoom to 10 and centering on home location
       if (((bounds['H']['H'] != {{session['home_lat']}}) && (bounds['H']['j'] != {{session['home_long']}})) || ((bounds['j']['H'] != {{session['home_lat']}}) && (bounds['j']['j'] != {{session['home_long']}}))) {
         map.fitBounds(bounds);
     } else {
@@ -127,15 +130,14 @@ $('#previous-day').on('click', function() {
   var changeDatePrev = {'showDate': $('#displayDate').html()};
   $.post('/change-previous-day', changeDatePrev, addMarkers) })
 
+
 $('#next-day').on('click', function() {
   var changeDateNext = {'showDate': $('#displayDate').html()};
   $.post('/change-next-day', changeDateNext, addMarkers)
   });
   };
 
-
 google.maps.event.addDomListener(window, 'load', initialize);
-
 
 </script>
 
@@ -154,28 +156,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <h3 style='display:inline' id='displayDate'>{{ current_date }}</h3>
 <button style='display:inline' id='next-day' name='next-day'>Next Day</button>
 
-<!-- <div ng-app="embeddedApp">
-<app.controller('MyController', function($scope)
-
-rzslider rz-slider-model="slider.minValue"
-          rz-slider-high="slider.maxValue"
-          rz-slider-options="slider.options"></rzslider>
-</div> -->
-<!-- <script>
-angular.module('slider', [])
-  .controller('SlideController', function ($scope) {
-  $scope.slider = {
-      minValue: 10,
-      maxValue: 90,
-      options: {
-          floor: 0,
-          ceil: 100,
-          step: 1
-      }
-  };
-})
-</script> -->
-
 <div id="map"></div>
 
 <button id='addLocation' name='addLocation'>Add Location</button>
@@ -183,11 +163,7 @@ angular.module('slider', [])
 
 <!-- When page loads, show the logs for that day -->
 
-<div id='logs'>
-
-</div>
-
-
+<div id='logs'></div>
 <!-- Button to create new log (sends to different page) -->
 <script>
 var username = "{{session['user']}}";
