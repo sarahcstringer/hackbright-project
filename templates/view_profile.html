@@ -4,8 +4,44 @@
 <h1>{{user.fname}} {{user.lname}}</h1>
 <h3>Username: {{user.username}}</h3>
 <p>Home location: {{ user.home_address }}</p>
+<button id='editHomeLocation'>Edit Home Location</button><br><br>
+<div id='map'></div>
+<div id='setNewLocMap' hidden></div>
 <p>Number of logs: {{ num_logs }}</p>
-<p>Date created: {{ user.date_created }}</p>
+<p>User since: {{ user.date_created }}</p>
+
+
+<script>
+
+function initialize() {
+
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}}),
+        map: map,
+        title: 'Home',
+        animation: google.maps.Animation.DROP
+    });
+
+    var mapProp = {
+        center:new google.maps.LatLng({{session['home_lat']}},{{session['home_long']}}),
+        zoom:10,
+        mapTypeId:google.maps.MapTypeId.ROADMAP
+    };
+
+    var map=new google.maps.Map(document.getElementById("map"),mapProp);
+    marker.setMap(map)
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+<script>
+
+    $('#editHomeLocation').on('click', function() {
+        $('#setNewLocMap').show()
+        $('#map').hide()
+        })
+
+</script>
 
 
 {% endblock %}

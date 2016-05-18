@@ -8,6 +8,7 @@
 {% if location_info.website != 'N/A' %}
 <p><a href={{ location_info.website }}>Visit Website</a></p>
 {% endif %}
+<div id='map'></div>
 
 <!-- <ul>Location Type:
 {% for loc_type in location_info.locationtypes %}
@@ -33,6 +34,27 @@
     $('#backDir').on('click', function() {
         window.location.href = ('/profile/{{session["user"]}}/view-locations');
     })
+
+    function initialize() {
+
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng({{location_info.latitude}},{{location_info.longitude}}),
+        map: map,
+        title: 'Home',
+        animation: google.maps.Animation.DROP
+    });
+
+    var mapProp = {
+        center:new google.maps.LatLng({{location_info.latitude}},{{location_info.longitude}}),
+        zoom:12,
+        mapTypeId:google.maps.MapTypeId.ROADMAP
+    };
+
+    var map=new google.maps.Map(document.getElementById("map"),mapProp);
+    marker.setMap(map)
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
 
 </script>
 
