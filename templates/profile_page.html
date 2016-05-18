@@ -53,13 +53,17 @@ function initialize() {
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 
         '<p>Comments: ' + log.comments + '</p></div>' +
-        '<button id="editlog'+log.log_id+'" hidden>Edit</button>'
+        '<div hidden id="EditInfoForlog' + log.log_id +'">' +
+        '<input id="newTitle'+log.log_id+'" type="text" value="'+log.title+'" placeholder="'+log.title+'">'+
+        '<p>Location: '+log.locationName +'</p>' +
+        '<br><button id="savelog'+log.log_id+'">Save</button>' +
+        '<button id="cancellog'+log.log_id+'">Cancel</button>' +
+        '<button id="deletelog'+log.log_id+'">Delete</button></div>'
         );
 
       htmlInfo = ('<div>' +
         '<p><b>Name: </b>' + log.locationName + '</p>' +
-        '<p>Address: ' + log.locationAddress + '</p>' +
-        '</div><button style="display:inline" class = "editInfoButton" id="editinfo'+log.log_id+'">Edit</button>'
+        '<p>Address: ' + log.locationAddress + '</p>'
         );
 
       newDiv.innerHTML = htmlDiv;
@@ -85,12 +89,18 @@ function initialize() {
           var thisID = $( this ).attr('id');
           console.log(thisID);
           $( this ).hide();
-          $('#edit'+thisID).show();
+          $('#EditInfoFor'+thisID).show();
 
-          $('#edit'+thisID).on('click', function() {
-            $( this ).hide();
-            console.log('hello');
+          $('#cancel'+thisID).on('click', function() {
+            $('#EditInfoFor'+thisID).hide();
             $('#'+thisID).show();
+          })
+          $('#delete'+thisID).on('click', function() {
+            $.post('/delete-log', {'logID': thisID}, function(data) {
+              console.log('deleted'+thisID);
+              location.reload();
+
+            })
           })
 
         });

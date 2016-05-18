@@ -15,7 +15,7 @@
 <script>
     
     $('#editUsername').on('click', function() {
-        $('#displayUsername').html('<input id="newUsername" placeholder={{user.username}}>'+
+        $('#displayUsername').html('<input id="newUsername" placeholder={{user.username}} value={{user.username}}>'+
             '<br><button id="submitUsername">Submit</button>' +
             '<button id="cancelEditUsername">Cancel</button>'+
             '<div id="usernameTaken"></div>');

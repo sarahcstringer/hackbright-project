@@ -447,6 +447,14 @@ def add_new_username():
 
     return jsonify({'user': user.username})
 
+@app.route('/delete-log', methods=['POST'])
+def delete_log():
+    log_id = request.form.get('logID')
+    log_id = int(log_id.replace('log',''))
+    log = Log.query.get(log_id)
+    db.session.delete(log)
+    db.session.commit()
+    return 'True'
 
 
 ###################
