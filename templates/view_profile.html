@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-
+<button id='backToProfile'>Back</button>
 <h1>{{user.fname}} {{user.lname}}</h1>
-<h3>Username: {{user.username}}</h3>
+<h3 id='displayUsername'>Username: {{user.username}}</h3>
+<button id='editUsername'>Edit Username</button>
 <p>Home location: {{ user.home_address }}</p>
 <button id='editHomeLocation'>Edit Home Location</button><br><br>
 <div id='map'></div>
@@ -10,6 +11,41 @@
 <p>Number of logs: {{ num_logs }}</p>
 <p>User since: {{ user.date_created }}</p>
 
+
+<script>
+    
+    $('#editUsername').on('click', function() {
+        $('#displayUsername').html('<input id="newUsername" placeholder={{user.username}}>'+
+            '<br><button id="submitUsername">Submit</button>' +
+            '<button id="cancelEditUsername">Cancel</button>'+
+            '<div id="usernameTaken"></div>');
+            $('#cancelEditUsername').on('click', function() {
+                 $('#displayUsername').html('Username: {{user.username}}');
+            });
+            $('#submitUsername').on('click', function() {
+                $.post('/edit-username-check', {'username': $('#newUsername').val()}, function(data) {
+                    if (data === 'False') {
+                        $.post('/add-new-username', {'username': $('#newUsername').val()}, function(data2) {
+                            if (data2) {
+                            console.log(data2.user)
+                             window.location.href = ('/profile/'+data2.user+'/view-profile');
+                            }
+                        })
+                    } else {
+                        $('#usernameTaken').html('Username in use');
+                    }
+                });
+            });
+
+
+    })
+$('#backToProfile').on('click', function() {
+    window.location.href = ('/');
+})
+
+
+
+</script>
 
 <script>
 

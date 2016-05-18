@@ -154,6 +154,28 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <h3 style='display:inline' id='displayDate'>{{ current_date }}</h3>
 <button style='display:inline' id='next-day' name='next-day'>Next Day</button>
 
+<!-- <div ng-app="embeddedApp">
+<app.controller('MyController', function($scope)
+
+rzslider rz-slider-model="slider.minValue"
+          rz-slider-high="slider.maxValue"
+          rz-slider-options="slider.options"></rzslider>
+</div> -->
+<!-- <script>
+angular.module('slider', [])
+  .controller('SlideController', function ($scope) {
+  $scope.slider = {
+      minValue: 10,
+      maxValue: 90,
+      options: {
+          floor: 0,
+          ceil: 100,
+          step: 1
+      }
+  };
+})
+</script> -->
+
 <div id="map"></div>
 
 <button id='addLocation' name='addLocation'>Add Location</button>
@@ -175,7 +197,7 @@ var username = "{{session['user']}}";
   })
 
 $('#viewLocations').on('click', function() {
-  window.location.href = '/profile/'+username+'/view-locations'
+  window.location.href = ('/profile/'+username+'/view-locations');
 })
 </script>
 

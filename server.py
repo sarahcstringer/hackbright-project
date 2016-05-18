@@ -6,7 +6,7 @@ from jinja2 import StrictUndefined
 from model import connect_to_db, db, User, Log, Location, Type, LocationType 
 from datetime import datetime, timedelta
 import os
-from sqlalchemy import or_, func, desc
+from sqlalchemy import or_, func, desc, update
 
 app = Flask(__name__)
 
@@ -415,6 +415,38 @@ def view_profile(username):
     num_logs = len(num_logs)
 
     return render_template('view_profile.html', user=user, username=username, num_logs=num_logs)
+
+
+@app.route('/edit-username-check', methods=['POST'])
+def edit_username_check():
+
+    username = request.form.get('username')
+
+    try:
+        User.query.filter(User.username == username).one()
+        return 'True'
+    except:
+        return 'False'
+
+@app.route('/add-new-username', methods=['POST'])
+def add_new_username():
+
+    new_username = request.form.get('username')
+    user = User.query.filter(User.username == session['user']).one()
+    user.username = new_username
+
+    db.session.commit()
+
+    print 'I committed a new entry'
+
+    session['user'] = new_username
+    print 'I changed the session username to', new_username
+    print session['user']
+
+    user = User.query.filter(User.username == new_username).one()
+
+    return jsonify({'user': user.username})
+
 
 
 ###################
