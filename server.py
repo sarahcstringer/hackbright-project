@@ -456,6 +456,22 @@ def delete_log():
     db.session.commit()
     return 'True'
 
+@app.route('/save-log', methods=['POST'])
+def save_log():
+    log_id = request.form.get('logID')
+    log_id = int(log_id.replace('log',''))
+    log = Log.query.get(log_id)
+    log.title = request.form.get('newTitle')
+    log.arrived = request.form.get('newArrival')
+    log.departed = request.form.get('newDeparture')
+    if request.form.get('newComments'):
+        print request.form.get('newComments')
+        log.comments = request.form.get('newComments')
+    log.visit_date = request.form.get('newDate')
+    db.session.commit()
+    return 'True'
+
+
 
 ###################
 

@@ -54,12 +54,17 @@ function initialize() {
         '<p>Departed: ' + log.departed + '</p>' + 
         '<p>Comments: ' + log.comments + '</p></div>' +
         '<div hidden id="EditInfoForlog' + log.log_id +'">' +
-        '<input id="newTitle'+log.log_id+'" type="text" value="'+log.title+'" placeholder="'+log.title+'">'+
+        '<input id="newTitlelog'+log.log_id+'" type="text" value="'+log.title+'" placeholder="'+log.title+'">'+
         '<p>Location: '+log.locationName +'</p>' +
+        'Date: <input type="text" name="date" id="datelog'+log.log_id+'" value="'+log.visitDate+'" placeholder="'+log.log_id+'"><br>' +
+        'Arrival Time: <input type="time" id="arrivallog'+log.log_id+'"name="arrival" value="'+log.arrived+'" placeholder="'+log.arrived+'"><br>'+
+        'Departure Time: <input type="time" id="departurelog'+log.log_id+'" name="departure" value="'+log.departed+'" placeholder="'+log.departed+'"><br>'+
+        '<textarea name="comments" cols="40" rows="5" placeholder="'+log.comments+'" id="comments'+log.log_id+'"></textarea>'+
         '<br><button id="savelog'+log.log_id+'">Save</button>' +
         '<button id="cancellog'+log.log_id+'">Cancel</button>' +
         '<button id="deletelog'+log.log_id+'">Delete</button></div>'
         );
+
 
       htmlInfo = ('<div>' +
         '<p><b>Name: </b>' + log.locationName + '</p>' +
@@ -99,9 +104,22 @@ function initialize() {
             $.post('/delete-log', {'logID': thisID}, function(data) {
               console.log('deleted'+thisID);
               location.reload();
-
             })
           })
+          $('#save'+thisID).on('click', function() {
+            var edittedInfo = {'logID': thisID,
+                              'newTitle': $('#newTitle'+thisID).val(),
+                              'newDate': $('#date'+thisID).val(),
+                              'newArrival': $('#arrival'+thisID).val(),
+                              'newDeparture': $('#departure'+thisID).val(),
+                              'newComments': $('#comments'+thisID).val()}
+            $.post('/save-log', edittedInfo, function(data) {
+              console.log('updated');
+              location.reload();
+            })
+          })
+
+
 
         });
 
