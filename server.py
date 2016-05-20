@@ -462,13 +462,26 @@ def save_log():
     log_id = int(log_id.replace('log',''))
     log = Log.query.get(log_id)
     log.title = request.form.get('newTitle')
-    log.arrived = request.form.get('newArrival')
-    log.departed = request.form.get('newDeparture')
-    if request.form.get('newComments'):
-        print request.form.get('newComments')
-        log.comments = request.form.get('newComments')
-    log.visit_date = request.form.get('newDate')
+    log.comments = request.form.get('newComments')
+    visit_date = request.form.get('newDate')
+    start_time = request.form.get('newArrival')
+    end_time = request.form.get('newDeparture')
+
+    logged_times = db.session.query(Log.arrived, 
+                        Log.departed).filter(Log.visit_date == visit_date).all()
+
+    for start_end in logged_times:
+
+        if ((start_end[0] <= start_time <= start_end[1]) or (start_end[0] <= end_time <= start_end[1])):
+            return 'False'
+        elif ((start_time <= start_end[0]) and (end_time >= start_end[1])):
+            return 'False'
+
+    log.visit_date = visit_date
+    log.arrived = start_time
+    log.departed = end_time
     db.session.commit()
+
     return 'True'
 
 @app.route('/check-times', methods=['POST'])

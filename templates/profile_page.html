@@ -46,8 +46,9 @@ function initialize() {
       newDiv.id = log.log_id;
       newDiv.className = 'logDiv'
 
-      htmlDiv = ('<div class="'+ log.locationId + ' individualLog" id="log'+log.log_id+'">' +
-        '<p><b>Title: </b>' + log.title + '</p>' +
+      htmlDiv = (
+        '<div class="title-header" id="titlelog'+log.log_id+'"><b>'+log.title+'</b></div>'+
+        '<div hidden class="'+ log.locationId + ' individualLog" id="log'+log.log_id+'">' +
         '<p>Location: '+log.locationName +'</p>' +
         '<p><b>Date: </b>' + log.visitDate + '</p>' +
         '<p>Arrived: ' + log.arrived + '</p>' +
@@ -90,9 +91,15 @@ function initialize() {
       bounds.extend(marker.position)
       bindInfoWindow(marker, map, infoWindow, htmlInfo)
     }
+        
+
+        $('.title-header').on('click', function() {
+          var divID = ( $(this).attr('id'));
+          divID = divID.slice(5, 20);
+          $('#'+divID).toggle();
+        })
         $('.logDiv .individualLog').on('dblclick', function() {
           var thisID = $( this ).attr('id');
-          console.log(thisID);
           $( this ).hide();
           $('#EditInfoFor'+thisID).show();
 
@@ -113,14 +120,16 @@ function initialize() {
                               'newArrival': $('#arrival'+thisID).val(),
                               'newDeparture': $('#departure'+thisID).val(),
                               'newComments': $('#comments'+thisID).val()};
-              console.log(edittedInfo['newComments'])
+
             $.post('/save-log', edittedInfo, function(data) {
-              console.log('updated');
-              location.reload();
-            })
+              console.log(data)
+               if (data === 'True') {
+                  location.reload();
+              } else {
+                console.log(data);
+            }
           })
-
-
+          })
 
         });
 
