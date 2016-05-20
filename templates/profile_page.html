@@ -59,7 +59,7 @@ function initialize() {
         'Date: <input type="text" name="date" id="datelog'+log.log_id+'" value="'+log.visitDate+'" placeholder="'+log.log_id+'"><br>' +
         'Arrival Time: <input type="time" id="arrivallog'+log.log_id+'"name="arrival" value="'+log.arrived+'" placeholder="'+log.arrived+'"><br>'+
         'Departure Time: <input type="time" id="departurelog'+log.log_id+'" name="departure" value="'+log.departed+'" placeholder="'+log.departed+'"><br>'+
-        '<textarea name="comments" cols="40" rows="5" placeholder="'+log.comments+'" id="comments'+log.log_id+'"></textarea>'+
+        '<textarea name="comments" cols="40" rows="5" value="'+log.comments+'" placeholder="'+log.comments+'" id="commentslog'+log.log_id+'"></textarea>'+
         '<br><button id="savelog'+log.log_id+'">Save</button>' +
         '<button id="cancellog'+log.log_id+'">Cancel</button>' +
         '<button id="deletelog'+log.log_id+'">Delete</button></div>'
@@ -90,7 +90,7 @@ function initialize() {
       bounds.extend(marker.position)
       bindInfoWindow(marker, map, infoWindow, htmlInfo)
     }
-        $('.logDiv .individualLog').on('click', function() {
+        $('.logDiv .individualLog').on('dblclick', function() {
           var thisID = $( this ).attr('id');
           console.log(thisID);
           $( this ).hide();
@@ -112,7 +112,8 @@ function initialize() {
                               'newDate': $('#date'+thisID).val(),
                               'newArrival': $('#arrival'+thisID).val(),
                               'newDeparture': $('#departure'+thisID).val(),
-                              'newComments': $('#comments'+thisID).val()}
+                              'newComments': $('#comments'+thisID).val()};
+              console.log(edittedInfo['newComments'])
             $.post('/save-log', edittedInfo, function(data) {
               console.log('updated');
               location.reload();

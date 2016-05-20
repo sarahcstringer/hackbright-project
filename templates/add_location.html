@@ -16,6 +16,7 @@
     <div id="datepicker"></div>
     Arrival Time: <input type='time' name='arrival' id='arrival'><br>
     Departure Time: <input type='time' name='departure' id='departure'><br>
+    <div id='overlappingTimeNotice'></div><br>
     Comments: <textarea name='comments' cols='40' rows='5' id='comments'></textarea>
       
     </div>
@@ -106,12 +107,20 @@
             addLocation.departure = $('#departure').val()
             addLocation.comments = $('#comments').val()
             addLocation.date = $('#datepicker').datepicker('getDate')
-            
-            console.log(addLocation)
-            
-            $.post('/log-new-location', addLocation, function() {
-                window.location.href = ('/');
+
+            $.post('/check-times', addLocation, function(data){
+              console.log(data)
+              if (data === 'True') {
+                $('#overlappingTimeNotice').hide();
+                $.post('/log-new-location', addLocation, function() {
+                  window.location.href = ('/');
+                })
+              } else {
+                $('#overlappingTimeNotice').show().html('You have already logged a location for this time period.');
+              }
             })
+            
+
           })
     });
   }

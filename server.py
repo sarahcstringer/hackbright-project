@@ -471,6 +471,27 @@ def save_log():
     db.session.commit()
     return 'True'
 
+@app.route('/check-times', methods=['POST'])
+def check_times():
+    start_time = request.form.get('arrival')
+    end_time = request.form.get('departure')
+    date = datetime.strptime(request.form.get('date')[0:15], '%a %b %d %Y').strftime('%Y-%m-%d')
+
+    print date
+
+    logged_times = db.session.query(Log.arrived, 
+                        Log.departed).filter(Log.visit_date == date).all()
+
+    for start_end in logged_times:
+        print start_end
+        if ((start_end[0] <= start_time <= start_end[1]) or (start_end[0] <= end_time <= start_end[1])):
+            return 'False'
+        elif ((start_time <= start_end[0]) and (end_time >= start_end[1])):
+            return 'False'
+
+    return 'True'
+        
+
 
 
 ###################
