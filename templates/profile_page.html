@@ -166,13 +166,20 @@ $( document ).ready(function() {
 
 $('#previous-day').on('click', function() {
   var changeDatePrev = {'showDate': $('#displayDate').html()};
-  $.post('/change-previous-day', changeDatePrev, addMarkers) })
+  $.post('/change-previous-day', changeDatePrev, addMarkers) 
+  })
 
 
 $('#next-day').on('click', function() {
   var changeDateNext = {'showDate': $('#displayDate').html()};
   $.post('/change-next-day', changeDateNext, addMarkers)
-  });
+  })
+
+$('#changeDateDatepicker').on('click', function() {
+  var changeDateDatepicker = {'showDate': $('#datepicker').datepicker('getDate')};
+  $('#datepicker').datepicker('setDate', null);
+  $.post('/change-datepicker', changeDateDatepicker, addMarkers) 
+  })
   };
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -193,6 +200,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <button id='previous-day' style='display:inline' name='previous-day'>Previous Day</button>
 <h3 style='display:inline' id='displayDate'>{{ current_date }}</h3>
 <button style='display:inline' id='next-day' name='next-day'>Next Day</button>
+<p> Or: </p>
+<input type="text" placeholder='select date' id="datepicker"></p>
+<button id='changeDateDatepicker'>Go</button>
 
 <div id="map"></div>
 
@@ -222,6 +232,12 @@ $('#viewLocations').on('click', function() {
         window.location.href = ('/profile/{{session["user"]}}/view-profile');
     })
 
+
+      $(function() {
+            $( "#datepicker" ).datepicker();
+            $( "#datepicker" ).datepicker("hide");
+
+         });
 
 </script>
 

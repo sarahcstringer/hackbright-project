@@ -274,6 +274,34 @@ def load_today():
 
     return jsonify(info)
 
+@app.route('/change-datepicker', methods=['POST'])
+def change_datepicker():
+    date_of_logs = datetime.strptime(request.form.get('showDate')[0:15], '%a %b %d %Y').strftime('%Y-%m-%d')
+   
+    user = User.query.filter(User.username == session['user']).one()
+
+    logs = [{'locationId': log.location_id,
+            'locationName': log.location.name,
+            'locationAddress': log.location.address,
+            'visitDate': log.visit_date,
+            'arrived': log.arrived,
+            'departed': log.departed,
+            'comments': log.comments,
+            'title': log.title,
+            'user': log.user_id,
+            'locationLat': log.location.latitude,
+            'locationLong': log.location.longitude,
+            'log_id': log.log_id
+        }
+        for log in Log.query.filter(Log.user_id == user.user_id,
+                                Log.visit_date == unicode(date_of_logs))
+                                .order_by(Log.arrived)
+                                .all()]
+    date_of_logs = datetime.strptime(date_of_logs, '%Y-%m-%d')
+    info = {'date': date_of_logs.strftime('%A, %B %d, %Y'),
+            'logs': logs}
+
+    return jsonify(info)
 
 @app.route('/change-previous-day', methods=['POST'])
 def change_previous_day():
