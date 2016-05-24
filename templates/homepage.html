@@ -12,7 +12,7 @@
 
 </style>
 
-<div class="site-wrapper">
+<div class="site-wrapper" id='loginStuff'>
     <div class="site-wrapper-inner">
 
         <h1 style='padding-top:75px'>Sarah's Project</h1>
@@ -23,6 +23,7 @@
 
     </div>
     <br>
+    <div>
 <form action='/login' method='POST' id='login-form' hidden>
     <input style='color:black' type='text' id='username' name='username' placeholder='Username'>
     <br>
@@ -32,9 +33,31 @@
     <br>
 </form>
 <div id='loginCredentials'></div>
+</div>
 <br>
 
-<p>Don't have an account? <a href='/signup'>Sign up here</a>.</p>
+<p>Don't have an account? <a href='#' id='signupLink'>Sign up here.</a></p>
+
+</div>
+<div id='signup' hidden>
+<form action='/create-profile' method='POST'>
+    First Name: <input type='text' name='fname' placeholder='First name' required>
+    <br>
+    Last Name: <input type='text' name='lname' placeholder='Last name' required>
+    <br>
+    Email: <input type='text' name='email' placeholder="Email" required>
+    <br>
+    Username: <input type='text' name='username' id='username' placeholder="Username" required>
+    <br>
+    <div id='checkUsernamediv'></div>
+    Password: <input type='password' name='pw' id='pw' placeholder="Create a password" required>
+    <br>
+    Re-enter Password: <input type='password' name='checkpw' id='checkpw' placeholder="Re-enter password">
+    <div id="checkpwdiv"></div>
+    <br>
+    <input type='submit' value='Create Account' id='createaccount'>
+    <button id='back'>Back</button>
+</form>
 </div>
 
 <script>
@@ -55,10 +78,45 @@
             if (data === 'False') {
                 $('#loginCredentials').html('Incorrect email/password combination');
             } else {
-                console.log('going to submit now...');
                 window.location.href = ('/profile/'+username);;
             }
         })
+    })
+
+
+
+    $('#checkpw').on('keyup', function(evt){
+        if ($('#checkpw').val() !== $('#pw').val()) {
+            $('#checkpwdiv').html('<b>Passwords do not match.</b>')
+            $('#createaccount').hide()
+        } else {
+           $('#checkpwdiv').html('') 
+           $('#createaccount').show()
+        }
+    })
+
+
+    $('#username').keyup(function(evt) {
+        $.post('/check-username', {'username': $('#username').val()}, function(data) {
+            if (data === 'True') {
+                $('#checkUsernamediv').show().html('<b>Username taken. Please select another</b>')
+                $('#createaccount').hide()
+            } else {
+                $('#checkUsernamediv').hide()
+               $('#createaccount').show()
+            }
+        })
+    })
+
+    $('#signupLink').on('click', function(evt) {
+        evt.preventDefault();
+        $('#loginStuff').hide("slide",{direction: 'left'}, 1000);
+        $('#signup').show('slide', {direction: 'right'}, 1000);
+    })
+    $('#back').on('click', function(evt) {
+        evt.preventDefault();
+        $('#signup').hide('slide', {direction: 'right'}, 1000);
+        $('#loginStuff').show("slide",{direction: 'left'}, 1000);
     })
 
 </script>
