@@ -29,9 +29,10 @@
 <div style='margin-left: 10px'><div id="slider-range"></div></div>
 <span id="SlideMax"></span>
 <br />
-<span id="time"></span>
+<span id="time"></span><br>
 
 <div id="map"></div>
+<table id='logs' style='width:40%; display:inline-block' class="table table-hover"></table><br>
 
 
 <button id='addLocation' name='addLocation'>Add Location</button>
@@ -39,7 +40,7 @@
 
 <!-- When page loads, show the logs for that day -->
 
-<div id='logs'></div>
+
 <!-- Button to create new log (sends to different page) -->
 
 
@@ -88,14 +89,14 @@ function initialize() {
     for (var i = 0; i<data.logs.length; i++) {
       log = data.logs[i];
 
-      var newDiv = document.createElement('div');
+      var newDiv = document.createElement('TR');
       newDiv.id = log.log_id;
       newDiv.className = 'logDiv'
 
       htmlDiv = (
-        '<div class="title-header" id="titlelog'+log.log_id+'"><b>'+log.title+'</b></div>'+
+        '<td class="title-header" id="titlelog'+log.log_id+'"><b>'+log.title+'</b></td>'+
         '<div hidden class="'+ log.locationId + ' individualLog" id="log'+log.log_id+'">' +
-        '<p>Location: '+log.locationName +'</p>' +
+        '<p>'+log.locationName +'</p>' +
         '<p><b>Date: </b>' + log.visitDate + '</p>' +
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 

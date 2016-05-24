@@ -1,24 +1,48 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Homepage</h1>
+<style>
+    body {
+    background: #333 url("/static/img/OA-Sunrise Waterfront_05.jpg");
+    background-size: cover;
 
-<form action='/login' method='POST' id='login-form'>
-    <input type='text' id='username' name='username' placeholder='Username'>
+    color: white;
+    text-align: center;
+}
+
+</style>
+
+<div class="site-wrapper">
+    <div class="site-wrapper-inner">
+
+        <h1 style='padding-top:75px'>Sarah's Project</h1>
+
+        <p class="lead">Go do the things.</p>
+
+        <button id='login' class="btn btn-lg btn-primary">Login</button>
+
+    </div>
     <br>
-    <input type='password' id='password' name='password' placeholder="Password">
+<form action='/login' method='POST' id='login-form' hidden>
+    <input style='color:black' type='text' id='username' name='username' placeholder='Username'>
     <br>
-    <input type='submit' value='Login' id='submit'>
+    <input style='color:black' type='password' id='password' name='password' placeholder="Password">
+    <br><br>
+    <input type='submit' value='Submit' id='submit' style="background-color: grey; font-family:">
     <br>
 </form>
 <div id='loginCredentials'></div>
 <br>
 
 <p>Don't have an account? <a href='/signup'>Sign up here</a>.</p>
+</div>
 
 <script>
 
     var username = $('#username').val();
+
+    $('#login').on('click', function() {
+        $('#login-form').toggle()})
 
     $('#submit').on('click', function(evt) {
         evt.preventDefault();
