@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<button id='back' name='back'>Back to Profile</button>
 
 <h1>Location Directory</h1>
-<button id='sortAlpha' name='sortAlpha' style='display:inline'>List</button>
-<button id='mapView' name='mapView' style='display:inline'>Map</button><br><br>
-<!-- <button id='listCategory' name='listCategory'>List by Category</button><br><br> -->
-<input type='text' id='searchLocations' placeholder="Search for location">
+<ul class="nav nav-tabs">
+  <li role="presentation" class="active"><a id='sortAlpha' href="#">List</a></li>
+  <li role="presentation"><a id='mapView' href="#">Map</a></li>
+</ul>
+<div class="input-group input-group-lg" id='searchLocationDiv'>
+  <span class="input-group-addon" id="sizing-addon1">Search</span>
+  <input type="text" id="searchLocations" placeholder="Search for location" class="form-control" aria-describedby="sizing-addon1">
+</div>
+
+<!-- <input type='text' id='searchLocations' placeholder="Search for location"> -->
 <div id='locationDirectory'></div>
 <div id='searchResults'></div>
 <div id="googleMap" style="width:500px;height:380px;"></div>
@@ -98,7 +103,7 @@ $( document ).ready(function() {
 $('#mapView').on('click', function() {
     $('#googleMap').show();
     $('#searchResults').hide();
-    $('#searchLocations').hide();
+    $('#searchLocationDiv').hide();
     $('#listCategory').hide();
     $('#locationDirectory').html('');
     initialize();
@@ -112,7 +117,8 @@ $('#mapView').on('click', function() {
 <script>
 $('#sortAlpha').on('click', function() {
     $('#googleMap').hide();
-    $('#searchLocations').show();
+    $('#searchLocationDiv').show();
+    $('#searchLocations').val('');
     $('#locationDirectory').html('');
     $('#locationDirectory').show();
     $('#listCategory').show()
@@ -138,15 +144,12 @@ $('#sortAlpha').on('click', function() {
 })
 })
 
-    $('#back').on('click', function() {
-        window.location.href = ('/')
-    })
 </script>
 
 <script>
   $('#searchLocations').keyup(function() {
     $('#locationDirectory').hide();
-    $('#searchLocations').show();
+    $('#searchLocationDiv').show();
     $('#searchResults').show();
     $('#googleMap').hide();
     var searchTerms = {'search': $('#searchLocations').val().toLowerCase()}

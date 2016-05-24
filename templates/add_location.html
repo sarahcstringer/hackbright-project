@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 
-  <p>Add location:</p> 
+  <h1>Add location:</h1> 
 
+  <form id='homeOther'>
   <input id='home' type='radio' name='setloc' value='Home'>Home
   <input id='other' type='radio' name='setloc' value='Other'>Other
+  </form>
+  <br>
 
     <input id="pac-input" class="controls" type="text"
         placeholder="Enter a location">
     <div id="map"></div>
-    <div>
+    <div style='display:inline-block; border:1px solid black;padding:5px; vertical-align:top'>
 
     Title: <input type='text' name='title' placeholder="Title" id='title'><br>
     Date: <input type='text' name='date' id='datepicker' value='{{session["date"]}}' placeholder="{{session['date']}}">
@@ -17,15 +20,17 @@
     Arrival Time: <input type='time' name='arrival' id='arrival'><br>
     Departure Time: <input type='time' name='departure' id='departure'><br>
     <div id='overlappingTimeNotice'></div><br>
-    Comments: <textarea name='comments' cols='40' rows='5' id='comments'></textarea>
-      
+    Comments: <textarea name='comments' cols='40' rows='5' id='comments'></textarea><br>
+    <button name='createLog' id='createLog'>Create Log</button>
+    <button style='display:inline-block;' id='cancelAdd'>Cancel</button>
     </div>
 
-    <button name='addLocation' id='addLocation'>Add Location</button>
 
 
-   <script>         
-      $(function() {
+   <script>
+
+
+          $(function() {
             $( "#datepicker" ).datepicker();
             $( "#datepicker" ).datepicker("hide");
 
@@ -35,7 +40,7 @@
     <script>
 
   function initialize() {
-    
+
 
     var mapOptions = {
       center: {lat: {{session['home_lat']}}, lng: {{session['home_long']}}},
@@ -47,8 +52,6 @@
 
     var input = /** @type {HTMLInputElement} */(
         document.getElementById('pac-input'));
-
-    
 
     // Create the autocomplete helper, and associate it with
     // an HTML text input box.
@@ -101,7 +104,8 @@
                       'website': place.website,
                       'place_types': JSON.stringify(place.types)}
 
-          $('#addLocation').on('click', function() {
+          $('#createLog').on('click', function(evt) {
+            evt.preventDefault();
             addLocation.title = $('#title').val()
             addLocation.arrival = $('#arrival').val()
             addLocation.departure = $('#departure').val()
@@ -119,9 +123,25 @@
                 $('#overlappingTimeNotice').show().html('You have already logged a location for this time period.');
               }
             })
-            
-
           })
+    });
+
+        $(document).ready(function(){
+
+        $('#homeOther').change(function(){
+          var selected_value = $("input[name='setloc']:checked").val();
+          if (selected_value === 'Home') {
+            $('#pac-input').attr('placeholder', '{{user.home_address}}')
+            $('#pac-input').attr('value', '{{user.home_address}}')
+            var firstResult = $(".pac-container .pac-item:first").text();
+
+        google.maps.event.trigger(autocomplete, 'place_changed', firstResult)
+
+          } else{
+            $('#pac-input').attr('placeholder', 'Enter a location')
+            $('#pac-input').attr('value', null)
+          }
+        });
     });
   }
 
@@ -129,6 +149,11 @@
   google.maps.event.addDomListener(window, 'load', initialize);
 
     </script>
+    <script>
+      $('#cancelAdd').click(function(evt) {
+        evt.preventDefault();
+        window.location.href = ('/')});
 
+    </script>
 
 {% endblock %}

@@ -2,20 +2,14 @@
 {% block content %}
 
 
-<!-- Create logout button -->
-<form action='/logout' style='display:inline'>
-<input type='submit' value='Logout'>
-</form>
-<button style='display:inline' name='viewProfile' id='viewProfile'>View Profile</button>
-
 <!-- Profile info for user -->
 <h1>Welcome back, {{ user.fname }}</h1>
 <h3>Where have you been today?</h3>
 <br>
 <!-- User can move back a day or forward a day -->
-<button id='previous-day' style='display:inline' name='previous-day'>Previous Day</button>
+<button id='previous-day' style='display:inline' name='previous-day'><<</button>
 <h3 style='display:inline' id='displayDate'>{{ current_date }}</h3>
-<button style='display:inline' id='next-day' name='next-day'>Next Day</button>
+<button style='display:inline' id='next-day' name='next-day'>>></button>
 <p> Or: </p>
 <input type="text" placeholder='select date' id="datepicker"></p>
 <button id='changeDateDatepicker'>Go</button>
@@ -23,7 +17,7 @@
 <br>
 
 <style>
-    #slider-range,#SlideMax{width:50%;}
+    #slider-range,#SlideMax{width:40%;}
 
 </style>
 <div style='margin-left: 10px'><div id="slider-range"></div></div>
@@ -32,19 +26,9 @@
 <span id="time"></span><br>
 
 <div id="map"></div>
-<table id='logs' style='width:40%; display:inline-block' class="table table-hover"></table><br>
+<table id='logs' style='width:40%; display:inline-block; vertical-align: top' class="table table-hover"></table><br>
 
-
-<button id='addLocation' name='addLocation'>Add Location</button>
-<button id='viewLocations' name='viewLocations'>View All Locations</button>
-
-<!-- When page loads, show the logs for that day -->
-
-
-<!-- Button to create new log (sends to different page) -->
-
-
-
+<!-- <button id='addLocation' name='addLocation'>Add Location</button> -->
 <script>
 
 // Slider code from http://marcneuwirth.com/blog/2010/02/21/using-a-jquery-ui-slider-to-select-a-time-range/
@@ -94,13 +78,13 @@ function initialize() {
       newDiv.className = 'logDiv'
 
       htmlDiv = (
-        '<td class="title-header" id="titlelog'+log.log_id+'"><b>'+log.title+'</b></td>'+
-        '<div hidden class="'+ log.locationId + ' individualLog" id="log'+log.log_id+'">' +
+        '<tr><td class="title-header" id="titlelog'+log.log_id+'"><b>'+log.title+'</b></td>'+
+        '<td hidden class="'+ log.locationId + ' individualLog" id="log'+log.log_id+'">' +
         '<p>'+log.locationName +'</p>' +
         '<p><b>Date: </b>' + log.visitDate + '</p>' +
         '<p>Arrived: ' + log.arrived + '</p>' +
         '<p>Departed: ' + log.departed + '</p>' + 
-        '<p>Comments: ' + log.comments + '</p></div>' +
+        '<p>Comments: ' + log.comments + '</p></td></tr>' +
         '<div hidden id="EditInfoForlog' + log.log_id +'">' +
         '<input id="newTitlelog'+log.log_id+'" type="text" value="'+log.title+'" placeholder="'+log.title+'">'+
         '<p>Location: '+log.locationName +'</p>' +
