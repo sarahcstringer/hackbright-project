@@ -242,6 +242,70 @@ def log_new_location():
     return "True"
 
 
+@app.route('/change-time-range', methods=['POST'])
+def change_time_range():
+
+    d = request.form.get('showDate')
+    current_date = datetime.strptime(d, '%A, %B %d, %Y')
+    date_of_logs = current_date.strftime('%Y-%m-%d')
+   
+    user = User.query.filter(User.username == session['user']).one()
+
+    start_time = request.form.get('startTime').split(' ')
+    start_time_hrs = (start_time[0].split(':'))[0]
+    start_time_mins = (start_time[0].split(':'))[1]
+    if start_time[1] == 'PM':
+        if start_time_hrs != '12':
+            start_time_hrs = int(start_time_hrs) + 12
+        
+    else:
+        if start_time_hrs not in ['10', '11', '12']:
+            start_time_hrs = '0'+start_time_hrs
+        if start_time_hrs == '12' and start_time[1] == 'AM':
+            start_time_hrs = '00'
+
+    start_time = '{}:{}'.format(start_time_hrs, start_time_mins)
+
+
+    end_time = request.form.get('endTime').split(' ')
+    end_time_hrs = (end_time[0].split(':'))[0]
+    end_time_mins = (end_time[0].split(':'))[1]
+    if end_time[1] == 'PM':
+        if end_time_hrs != '12':
+            end_time_hrs = int(end_time_hrs) + 12
+    else:
+        if end_time_hrs not in ['10', '11', '12']:
+            end_time_hrs = '0'+end_time_hrs
+        if end_time_hrs == '12' and end_time[1] == 'AM':
+            end_time_hrs = '00'
+    end_time = '{}:{}'.format(end_time_hrs, end_time_mins)
+
+    logs = [{'locationId': log.location_id,
+            'locationName': log.location.name,
+            'locationAddress': log.location.address,
+            'visitDate': log.visit_date,
+            'arrived': log.arrived,
+            'departed': log.departed,
+            'comments': log.comments,
+            'title': log.title,
+            'user': log.user_id,
+            'locationLat': log.location.latitude,
+            'locationLong': log.location.longitude,
+            'log_id': log.log_id
+        }
+        for log in Log.query.filter(Log.user_id == user.user_id,
+                                Log.visit_date == unicode(date_of_logs),
+                                Log.arrived >= start_time,
+                                Log.departed <= end_time)
+                                .order_by(Log.arrived)
+                                .all()]
+    date_of_logs = datetime.strptime(date_of_logs, '%Y-%m-%d')
+    info = {'date': date_of_logs.strftime('%A, %B %d, %Y'),
+            'logs': logs}
+
+    return jsonify(info)
+
+
 @app.route('/load_today')
 def load_today():
     """Load today's information"""
@@ -280,6 +344,35 @@ def change_datepicker():
    
     user = User.query.filter(User.username == session['user']).one()
 
+    start_time = request.form.get('startTime').split(' ')
+    start_time_hrs = (start_time[0].split(':'))[0]
+    start_time_mins = (start_time[0].split(':'))[1]
+    if start_time[1] == 'PM':
+        if start_time_hrs != '12':
+            start_time_hrs = int(start_time_hrs) + 12
+        
+    else:
+        if start_time_hrs not in ['10', '11', '12']:
+            start_time_hrs = '0'+start_time_hrs
+        if start_time_hrs == '12' and start_time[1] == 'AM':
+            start_time_hrs = '00'
+
+    start_time = '{}:{}'.format(start_time_hrs, start_time_mins)
+
+
+    end_time = request.form.get('endTime').split(' ')
+    end_time_hrs = (end_time[0].split(':'))[0]
+    end_time_mins = (end_time[0].split(':'))[1]
+    if end_time[1] == 'PM':
+        if end_time_hrs != '12':
+            end_time_hrs = int(end_time_hrs) + 12
+    else:
+        if end_time_hrs not in ['10', '11', '12']:
+            end_time_hrs = '0'+end_time_hrs
+        if end_time_hrs == '12' and end_time[1] == 'AM':
+            end_time_hrs = '00'
+    end_time = '{}:{}'.format(end_time_hrs, end_time_mins)
+
     logs = [{'locationId': log.location_id,
             'locationName': log.location.name,
             'locationAddress': log.location.address,
@@ -294,7 +387,9 @@ def change_datepicker():
             'log_id': log.log_id
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
-                                Log.visit_date == unicode(date_of_logs))
+                                Log.visit_date == unicode(date_of_logs),
+                                Log.arrived >= start_time,
+                                Log.departed <= end_time)
                                 .order_by(Log.arrived)
                                 .all()]
     date_of_logs = datetime.strptime(date_of_logs, '%Y-%m-%d')
@@ -311,6 +406,34 @@ def change_previous_day():
     current_date = datetime.strptime(d, '%A, %B %d, %Y')
     previous_day = current_date - timedelta(days=1)
     date_of_logs = previous_day.strftime('%Y-%m-%d')
+    start_time = request.form.get('startTime').split(' ')
+    start_time_hrs = (start_time[0].split(':'))[0]
+    start_time_mins = (start_time[0].split(':'))[1]
+    if start_time[1] == 'PM':
+        if start_time_hrs != '12':
+            start_time_hrs = int(start_time_hrs) + 12
+        
+    else:
+        if start_time_hrs not in ['10', '11', '12']:
+            start_time_hrs = '0'+start_time_hrs
+        if start_time_hrs == '12' and start_time[1] == 'AM':
+            start_time_hrs = '00'
+
+    start_time = '{}:{}'.format(start_time_hrs, start_time_mins)
+
+
+    end_time = request.form.get('endTime').split(' ')
+    end_time_hrs = (end_time[0].split(':'))[0]
+    end_time_mins = (end_time[0].split(':'))[1]
+    if end_time[1] == 'PM':
+        if end_time_hrs != '12':
+            end_time_hrs = int(end_time_hrs) + 12
+    else:
+        if end_time_hrs not in ['10', '11', '12']:
+            end_time_hrs = '0'+end_time_hrs
+        if end_time_hrs == '12' and end_time[1] == 'AM':
+            end_time_hrs = '00'
+    end_time = '{}:{}'.format(end_time_hrs, end_time_mins)
 
     user = User.query.filter(User.username == session['user']).one()
 
@@ -328,7 +451,9 @@ def change_previous_day():
             'log_id': log.log_id
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
-                                Log.visit_date == unicode(date_of_logs))
+                                Log.visit_date == unicode(date_of_logs),
+                                Log.arrived >= start_time,
+                                Log.departed <= end_time)
                                 .order_by(Log.arrived)
                                 .all()]
 
@@ -345,6 +470,35 @@ def change_next_day():
     next_day = current_date + timedelta(days=1)
     date_of_logs = next_day.strftime('%Y-%m-%d')
 
+    start_time = request.form.get('startTime').split(' ')
+    start_time_hrs = (start_time[0].split(':'))[0]
+    start_time_mins = (start_time[0].split(':'))[1]
+    if start_time[1] == 'PM':
+        if start_time_hrs != '12':
+            start_time_hrs = int(start_time_hrs) + 12
+        
+    else:
+        if start_time_hrs not in ['10', '11', '12']:
+            start_time_hrs = '0'+start_time_hrs
+        if start_time_hrs == '12' and start_time[1] == 'AM':
+            start_time_hrs = '00'
+
+    start_time = '{}:{}'.format(start_time_hrs, start_time_mins)
+
+
+    end_time = request.form.get('endTime').split(' ')
+    end_time_hrs = (end_time[0].split(':'))[0]
+    end_time_mins = (end_time[0].split(':'))[1]
+    if end_time[1] == 'PM':
+        if end_time_hrs != '12':
+            end_time_hrs = int(end_time_hrs) + 12
+    else:
+        if end_time_hrs not in ['10', '11', '12']:
+            end_time_hrs = '0'+end_time_hrs
+        if end_time_hrs == '12' and end_time[1] == 'AM':
+            end_time_hrs = '00'
+    end_time = '{}:{}'.format(end_time_hrs, end_time_mins)
+
     user = User.query.filter(User.username == session['user']).one()
 
     logs = [{'locationId': log.location_id,
@@ -361,7 +515,9 @@ def change_next_day():
             'log_id': log.log_id
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
-                                Log.visit_date == unicode(date_of_logs))
+                                Log.visit_date == unicode(date_of_logs),
+                                Log.arrived >= start_time,
+                                Log.departed <= end_time)
                                 .order_by(Log.arrived)
                                 .all()]
 
@@ -496,7 +652,8 @@ def save_log():
     end_time = request.form.get('newDeparture')
 
     logged_times = db.session.query(Log.arrived, 
-                        Log.departed).filter(Log.visit_date == visit_date).all()
+                        Log.departed).filter(Log.visit_date == visit_date,
+                                            Log.log_id != log_id).all()
 
     for start_end in logged_times:
 
@@ -532,8 +689,6 @@ def check_times():
 
     return 'True'
         
-
-
 
 ###################
 
