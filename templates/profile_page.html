@@ -8,7 +8,7 @@
 <br>
 <!-- User can move back a day or forward a day -->
 <button id='previous-day' style='display:inline' name='previous-day'><<</button>
-<h3 style='display:inline' id='displayDate'>{{ current_date }}</h3>
+<h3 style='display:inline' id='displayDate'></h3>
 <button style='display:inline' id='next-day' name='next-day'>>></button>
 <p> Or: </p>
 <input type="text" placeholder='select date' id="datepicker"></p>
@@ -245,20 +245,20 @@ $( document ).ready(function() {
 
 
 $('#previous-day').on('click', function() {
-  var changeDatePrev = {'showDate': $('#displayDate').html(), 'startTime': startTime, 'endTime': endTime};
-  $.post('/change-previous-day', changeDatePrev, addMarkers)
+  var changeDatePrev = {'showDate': $('#displayDate').html(), 'startTime': startTime, 'endTime': endTime, 'dateRequest': 'previous'};
+  $.post('/change-date', changeDatePrev, addMarkers)
   })
 
 
 $('#next-day').on('click', function() {
-  var changeDateNext = {'showDate': $('#displayDate').html(), 'startTime': startTime, 'endTime': endTime};
-  $.post('/change-next-day', changeDateNext, addMarkers)
+  var changeDateNext = {'showDate': $('#displayDate').html(), 'startTime': startTime, 'endTime': endTime, 'dateRequest': 'next'};
+  $.post('/change-date', changeDateNext, addMarkers)
   })
 
 $('#changeDateDatepicker').on('click', function() {
-  var changeDateDatepicker = {'showDate': $('#datepicker').datepicker('getDate'), 'startTime': startTime, 'endTime': endTime};
+  var changeDateDatepicker = {'showDate': $('#datepicker').datepicker('getDate'), 'startTime': startTime, 'endTime': endTime, 'dateRequest': 'datepicker'};
   $('#datepicker').datepicker('setDate', null);
-  $.post('/change-datepicker', changeDateDatepicker, addMarkers) 
+  $.post('/change-date', changeDateDatepicker, addMarkers) 
   })
   };
 
