@@ -268,30 +268,20 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 
 <script>
-var username = "{{session['user']}}";
-    $('#addLocation').on('click', function(){
-    $.post('/set-date', {'date': $('#displayDate').html()}, function(data) {
-      window.location.href = ('/profile/'+username+'/add-location')})
-  })
 
-$('#viewLocations').on('click', function() {
-  window.location.href = ('/profile/'+username+'/view-locations');
-})
-</script>
+    $('#viewLocations').on('click', function() {
+      window.location.href = ('/profile/'+username+'/view-locations');
+    })
 
-
-<script>
   
     $('#viewProfile').on('click', function() {
         window.location.href = ('/profile/{{session["user"]}}/view-profile');
     })
 
-
-      $(function() {
-            $( "#datepicker" ).datepicker();
-            $( "#datepicker" ).datepicker("hide");
-
-         });
+    $(function() {
+      $( "#datepicker" ).datepicker();
+      $( "#datepicker" ).datepicker("hide");
+    });
 
 </script>
 

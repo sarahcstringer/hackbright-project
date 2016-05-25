@@ -12,9 +12,12 @@ app = Flask(__name__)
 
 #for debug toolbar
 app.secret_key = 'ABC'
+
+# create global API key for google maps API (*currently not using key in app*)
 google_api = os.environ['GOOGLE_LOC_API']
 global google_location_api
 google_location_api = "https://maps.googleapis.com/maps/api/js?key="+google_api+"&libraries=places&callback=initialize"
+
 app.jinja_env.undefined = StrictUndefined
 
 @app.context_processor
@@ -53,10 +56,8 @@ def check_login():
             session['home_lat'] = user.home_lat 
             session['home_long'] = user.home_long
             return 'True'
-        # if credentials to do not match, return False
         else: 
             return 'False'
-    # if username not stored in user table, return false
     except:
         return 'False'
 
@@ -92,21 +93,20 @@ def create_profile():
 
     # store username in session
     session['user'] = username
-    
-    # render template for user to select home location (profile.html)
+
     return render_template('profile.html', fname=fname, lname=lname,
                             email=email, username=username)
 
 @app.route('/check-username', methods=['POST'])
 def check_username():
     """Check to see if username is already in database"""
+    
     username = request.form.get('username')
 
     # if username matches on already in the database, return True
     try:
         User.query.filter(User.username == username).one()
         return 'True'
-    # else if username not in database, return False
     except:
         return 'False'
 
@@ -154,8 +154,16 @@ def profile_page(username):
 def set_date():
     """Get date of the logs the user is currently viewing, store in session"""
 
-    date = request.form.get('date')
+    # if there is a value for "date" in the post data, retrieve that
+    if request.form.get('date'):
+        date = request.form.get('date')
+    # otherwise, use today's date
+    else: 
+        date = datetime.now().strftime('%A, %B %d, %Y')
+    # format date
     date = datetime.strptime(date, '%A, %B %d, %Y').strftime('%m/%d/%Y')
+    
+    # store that date in session info
     session['date'] = date
 
     return 'true'
@@ -248,7 +256,6 @@ def log_new_location():
     db.session.add(log)
     db.session.commit()
 
-    # return True when completed
     return "True"
 
 @app.route('/check-times', methods=['POST'])
@@ -273,7 +280,6 @@ def check_times():
         elif ((start_time <= start_end[0]) and (end_time >= start_end[1])):
             return 'False'
 
-    # otherwise, return True
     return 'True'
 
 @app.route('/change-time-range', methods=['POST'])
@@ -494,7 +500,6 @@ def location_directory():
         for log in Log.query.filter(Log.user_id == user.user_id)
                     .all()}
 
-    # return locations to browser
     return jsonify(locations)
 
 @app.route('/search-location-directory', methods=['POST'])
@@ -524,7 +529,6 @@ def search_location_directory():
                         func.lower(Location.name).like('%'+search_term+'%'))
                         .all()}
 
-    # return jsonified dictionary to browser
     return jsonify(locations)
 
 
@@ -569,7 +573,6 @@ def edit_username_check():
     try:
         User.query.filter(User.username == username).one()
         return 'True'
-    # otherwise return False
     except:
         return 'False'
 

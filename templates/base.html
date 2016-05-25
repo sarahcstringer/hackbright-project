@@ -2,23 +2,30 @@
 <html>
 <head>
   <title>Project</title>
+   
+   <!-- ************* SCRIPTS/LINKS FOR APP ************* -->
+
+   <!-- *** JQUERY AND PLUGIN INFO *** -->
    <script src="https://code.jquery.com/jquery.js"></script>
-   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-     
-  <link rel="shortcut icon" href="">
-  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+   <!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script> -->
+
+   <!-- *** BOOTSTRAP *** -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+   
+     <!-- *** GOOGLE MAPS API/FORMATTING *** -->
+    <link rel="shortcut icon" href="">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
       html, body {
@@ -76,10 +83,11 @@
  
    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
 
-
 </head>
 
 <body>
+<!-- *** NAVBAR *** -->
+<!-- If the user is logged in, show navbar below -->
 {% if session['user'] is defined %}
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
@@ -113,6 +121,18 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
+
+<!-- route user to the add location page from navbar click, if user is logged in -->
+<script>
+  var username = "{{session['user']}}";
+    $('#addLocation').on('click', function(evt){
+      evt.preventDefault();
+    $.post('/set-date', {'date': $('#displayDate').html()}, function(data) {
+      window.location.href = ('/profile/'+username+'/add-location')})
+  })
+</script>
+
+<!-- If user is not logged in, display simplified navbar -->
 {% else %}
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
@@ -130,7 +150,8 @@
     </nav>
 
 {% endif %}
-  
+
+<!-- Flash any messages and then clear flashed messages queue -->
 <div>
   {% for message in get_flashed_messages() %}
     <p>{{ message }}</p>
@@ -138,9 +159,8 @@
 </div>
 
 
+<!-- start block content -->
 {% block content %} put your content here {% endblock %}
-
-
 
 </body>
 </html>
