@@ -21,9 +21,6 @@ class User(db.Model):
     home_long = db.Column(db.String(40), nullable=True)
     home_address = db.Column(db.String(250), nullable=True)
     home_id = db.Column(db.String(100), nullable=True)
-    work_address = db.Column(db.String(250), nullable=True)
-    work_lat = db.Column(db.String(40), nullable=True)
-    work_long = db.Column(db.String(40), nullable=True)
     date_created = db.Column(db.DateTime, nullable=False)
 
     def __repr__(self):
@@ -103,12 +100,13 @@ class LocationType (db.Model):
         return "<Location type {} for {}".format(self.type_id, self.location_id)
 
 
-def connect_to_db(app):
+def connect_to_db(app, db_uri='postgresql:///locations'):
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///locations'
-    app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+    # app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)
+
 
 
 if __name__ == '__main__':
