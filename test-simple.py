@@ -42,6 +42,13 @@ class ProjectTestFunctional(unittest.TestCase):
                 print 'Element found on page'
             else:
                 self.fail('Element not on page')
+
+            hidden_element = self.browser.find_element_by_id('login')
+            if element.is_displayed():
+                self.fail('Element should not display on page')
+            else:
+                print 'Element hidden'
+
         except NoSuchElementException:
             print 'Not an element exception'
             return False
