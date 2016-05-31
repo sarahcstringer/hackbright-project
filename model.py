@@ -1,6 +1,7 @@
 """Models and database functions for Hackbright project"""
 
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -98,6 +99,39 @@ class LocationType (db.Model):
     def __repr__(self):
 
         return "<Location type {} for {}".format(self.type_id, self.location_id)
+
+def example_data():
+    user1 = User(email='bbuilder@gmail.com', fname='Bob', lname='Builder',
+                username='bbuild', password='password', home_lat='37.794434',
+                home_long='-122.39520160000001', 
+                home_address='50 Market St, San Francisco, CA 94105, USA',
+                home_id='ARi1KXmVCb5Rc', 
+                date_created=datetime.strptime('2016-05-19 16:13:42.940831', 
+                    '%Y-%m-%d %H:%M:%S.%f'))
+    db.session.add(user1)
+    db.session.commit()
+    user_id = db.session.query(User.user_id).filter(User.username == 'bbuild').one()
+
+    location1 = Location(location_id='ChIJOWCTNGSAhYARLxosf_Izuy4', 
+                latitude='37.7936231', longitude='-122.39299269999998',
+                address='8 Mission St, San Francisco, CA 94105, USA', 
+                name='Hotel Vitale', 
+                website='http://www.jdvhotels.com/hotels/california/san-francisco-hotels/hotel-vitale',
+                phone='(415) 278-3700')
+
+    db.session.add(location1)
+    db.session.commit()
+
+    log1 = Log(user_id=user_id[0], location_id='ChIJOWCTNGSAhYARLxosf_Izuy4', 
+                created_at=datetime.strptime('2016-05-29 14:08:51.615528', 
+                    '%Y-%m-%d %H:%M:%S.%f'), 
+                visit_date='2016-05-29', arrived='16:00', departed='17:00',
+                comments='Lovely wedding', title='Wedding')
+
+
+    db.session.add(log1)
+    db.session.commit()
+
 
 
 def connect_to_db(app, db_uri='postgresql:///locations'):

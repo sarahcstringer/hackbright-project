@@ -1,18 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-
+<div class='container'>
+<div class='row'>
   <h1>Add location:</h1> 
-
-  <form id='homeOther'>
-  <input id='home' type='radio' name='setloc' value='Home'>Home
-  <input id='other' type='radio' name='setloc' value='Other'>Other
-  </form>
   <br>
 
     <input id="pac-input" class="controls" type="text"
         placeholder="Enter a location">
-    <div id="map"></div>
-    <div style='display:inline-block; border:1px solid black;padding:5px; vertical-align:top'>
+        </div>
+    <div class='row'>
+    <div id="map" class="col-md-6 col-md-push-6"></div>
+    <div class="col-md-6 col-md-pull-6" style='display:inline-block; border:1px solid black;padding:5px; vertical-align:top'>
 
     Title: <input type='text' name='title' placeholder="Title" id='title'><br>
     Date: <input type='text' name='date' id='datepicker' value='{{session["date"]}}' placeholder="{{session['date']}}">
@@ -24,11 +22,18 @@
     <button name='createLog' id='createLog'>Create Log</button>
     <button style='display:inline-block;' id='cancelAdd'>Cancel</button>
     </div>
+    </div>
+    </div>
 
 
 
    <script>
+$(window).resize(function () {
+    var h = $(window).height(),
+        offsetTop = 190; // Calculate the top offset
 
+    $('#map').css('height', (h - offsetTop));
+}).resize();
 
           $(function() {
             $( "#datepicker" ).datepicker();

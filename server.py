@@ -7,6 +7,7 @@ from model import connect_to_db, db, User, Log, Location, Type, LocationType
 from datetime import datetime, timedelta
 import os
 from sqlalchemy import or_, func, desc, update
+import helper
 
 app = Flask(__name__)
 
@@ -42,24 +43,20 @@ def homepage():
 def check_login():
     """Check if username and password match user credentials in database"""
 
-    # collect username and password from post request
+    # # collect username and password from post request
     username = request.form.get('username')
     password = request.form.get('password')
 
-
-    try:
-    # if username exists in db, check to see if user-entered username and
-    # passwords match. If so, store username and home lat/long in session
+    if helper.check_login(username, password) == 'True':
+        # add user info to session
         user = User.query.filter(User.username == username).one()
-        if user.username == username and user.password == password:
-            session['user'] = username
-            session['home_lat'] = user.home_lat 
-            session['home_long'] = user.home_long
-            return 'True'
-        else: 
-            return 'False'
-    except:
+        session['user'] = username
+        session['home_lat'] = user.home_lat 
+        session['home_long'] = user.home_long
+        return 'True'
+    else:
         return 'False'
+
 
 @app.route('/logout')
 def logout():
@@ -75,41 +72,26 @@ def create_profile():
     """Create profile for user"""
 
     # receive information via POST request from signup form
-    fname = request.form.get('fname') 
-    lname = request.form.get('lname')
-    email = request.form.get('email')
-    username = request.form.get('username')
-    password = request.form.get('pw')
-    date_created = datetime.now()
+    form_args = request.form
 
-    # create new field in User table
-    user = User(email=email, username=username, 
-                password=password, fname=fname, lname=lname,
-                date_created=date_created)
+    user = helper.create_user(form_args)
 
     # add and commit
     db.session.add(user)
     db.session.commit()
 
     # store username in session
-    session['user'] = username
+    session['user'] = user.username
 
-    return render_template('profile.html', fname=fname, lname=lname,
-                            email=email, username=username)
+    return render_template('profile.html', fname=user.fname, lname=user.lname,
+                            username=user.username)
 
 @app.route('/check-username', methods=['POST'])
 def check_username():
     """Check to see if username is already in database"""
     
     username = request.form.get('username')
-
-    # if username matches on already in the database, return True
-    try:
-        User.query.filter(User.username == username).one()
-        return 'True'
-    except:
-        return 'False'
-
+    return helper.check_username_exists(username)
 
 @app.route('/set-home', methods=['POST'])
 def set_home():
@@ -208,25 +190,17 @@ def log_new_location():
     # retrieve user from db
     user = User.query.filter(User.username == session['user']).one()
 
-    # create new location object
+
+    # # create new location object
     location = Location(location_id=location_id, latitude=latitude,
                         longitude=longitude, address=address, name=name,
                         website=website, phone=phone)
-
-    # if this location already exists, don't do anything additional to db
-    try:
-        Location.query.filter(Location.location_id == location.location_id).one()
-    # if location does not exist in location table, add new field
-    except: 
-        db.session.add(location)
-        db.session.commit()
+    helper.add_location(location)
 
     # Clean up the string list of establishment types
     for l_type in place_types:
-        l_type = l_type.replace('[', '')
-        l_type = l_type.replace(']', '')
-        l_type = l_type.replace('"', '')
-        # if the type already exists in the table, don't add it
+        l_type = helper.format_place_types(l_type)
+
         try:
             Type.query.filter(Type.type_name == l_type).one()
         # if it doesn't, add it to the table
@@ -234,8 +208,8 @@ def log_new_location():
             add_location_type = Type(type_name=l_type)
             db.session.add(add_location_type)
             db.session.commit()
-
-        type_obj = Type.query.filter(Type.type_name == l_type).one()
+            
+            type_obj = Type.query.filter(Type.type_name == l_type).one()
         
         # see if the location-type connection exists in table
         try:
@@ -272,13 +246,8 @@ def check_times():
                         Log.departed).filter(Log.visit_date == date).all()
 
     # loop through the logs on that day and get their start/end times
-    for start_end in logged_times:
-        # if this log's start and end times overlap with any other logs' times, 
-        # return False
-        if ((start_end[0] <= start_time <= start_end[1]) or (start_end[0] <= end_time <= start_end[1])):
-            return 'False'
-        elif ((start_time <= start_end[0]) and (end_time >= start_end[1])):
-            return 'False'
+    if helper.check_overlap_times(logged_times, start_time, end_time) == 'False':
+        return 'False'
 
     return 'True'
 
@@ -288,43 +257,23 @@ def change_time_range():
 
     # get date the user is viewing and string format
     d = request.form.get('showDate')
+    
+    if not d:
+        d = datetime.now().strftime('%A, %B %d, %Y')
+
     current_date = datetime.strptime(d, '%A, %B %d, %Y')
     date_of_logs = current_date.strftime('%Y-%m-%d')
    
     # get user information
     user = User.query.filter(User.username == session['user']).one()
 
-    # format start time based on user input
     start_time = request.form.get('startTime').split(' ')
-    start_time_hrs = (start_time[0].split(':'))[0]
-    start_time_mins = (start_time[0].split(':'))[1]
-    # convert to 24-hr format
-    if start_time[1] == 'PM':
-        if start_time_hrs != '12':
-            start_time_hrs = int(start_time_hrs) + 12
-    # 0-pad hours
-    else:
-        if start_time_hrs not in ['10', '11', '12']:
-            start_time_hrs = '0'+start_time_hrs
-        if start_time_hrs == '12' and start_time[1] == 'AM':
-            start_time_hrs = '00'
+    print "****", start_time
+    start_time = helper.format_time(start_time)
 
-    # format new time as a string
-    start_time = '{}:{}'.format(start_time_hrs, start_time_mins)
-
-    # format end time based on user input, same as above
     end_time = request.form.get('endTime').split(' ')
-    end_time_hrs = (end_time[0].split(':'))[0]
-    end_time_mins = (end_time[0].split(':'))[1]
-    if end_time[1] == 'PM':
-        if end_time_hrs != '12':
-            end_time_hrs = int(end_time_hrs) + 12
-    else:
-        if end_time_hrs not in ['10', '11', '12']:
-            end_time_hrs = '0'+end_time_hrs
-        if end_time_hrs == '12' and end_time[1] == 'AM':
-            end_time_hrs = '00'
-    end_time = '{}:{}'.format(end_time_hrs, end_time_mins)
+    end_time = helper.format_time(end_time)
+
 
     # query database and create list of logs matching filters
     logs = [{'locationId': log.location_id,
@@ -397,56 +346,18 @@ def load_today():
 def change_date():
     """Return logs for specified date"""
 
-    # if user selects date from dropdown calendar, select logs from that date
-    if request.form.get('dateRequest') == 'datepicker':
-        date_of_logs = datetime.strptime(request.form.get('showDate')[0:15], '%a %b %d %Y').strftime('%Y-%m-%d')
-   
-   # elif user clicks for previous day's info, calculate previous day's date
-    elif request.form.get('dateRequest') == 'previous':
-        d = request.form.get('showDate')
-        current_date = datetime.strptime(d, '%A, %B %d, %Y')
-        previous_day = current_date - timedelta(days=1)
-        date_of_logs = previous_day.strftime('%Y-%m-%d')
-
-    # elif user clicks for next day's info, calculate next day's date
-    elif request.form.get('dateRequest') == 'next':
-        d = request.form.get('showDate')
-        current_date = datetime.strptime(d, '%A, %B %d, %Y')
-        next_day = current_date + timedelta(days=1)
-        date_of_logs = next_day.strftime('%Y-%m-%d')
+    date_of_logs = helper.format_date(request.form)
 
     # retrieve user's info
     user = User.query.filter(User.username == session['user']).one()
 
     # format start time
     start_time = request.form.get('startTime').split(' ')
-    start_time_hrs = (start_time[0].split(':'))[0]
-    start_time_mins = (start_time[0].split(':'))[1]
-    if start_time[1] == 'PM':
-        if start_time_hrs != '12':
-            start_time_hrs = int(start_time_hrs) + 12
-        
-    else:
-        if start_time_hrs not in ['10', '11', '12']:
-            start_time_hrs = '0'+start_time_hrs
-        if start_time_hrs == '12' and start_time[1] == 'AM':
-            start_time_hrs = '00'
-
-    start_time = '{}:{}'.format(start_time_hrs, start_time_mins)
-
-    # format end time
+    start_time = helper.format_time(start_time)
+    
+    # # format end time
     end_time = request.form.get('endTime').split(' ')
-    end_time_hrs = (end_time[0].split(':'))[0]
-    end_time_mins = (end_time[0].split(':'))[1]
-    if end_time[1] == 'PM':
-        if end_time_hrs != '12':
-            end_time_hrs = int(end_time_hrs) + 12
-    else:
-        if end_time_hrs not in ['10', '11', '12']:
-            end_time_hrs = '0'+end_time_hrs
-        if end_time_hrs == '12' and end_time[1] == 'AM':
-            end_time_hrs = '00'
-    end_time = '{}:{}'.format(end_time_hrs, end_time_mins)
+    end_time = helper.format_time(end_time)
 
     # retrieve logs that match database query
     logs = [{'locationId': log.location_id,
@@ -565,11 +476,8 @@ def view_profile(username):
 @app.route('/edit-username-check', methods=['POST'])
 def edit_username_check():
     """check if username the user requests already exists in database"""
-
-    # retrieve username the user would like to create
     username = request.form.get('username')
 
-    # if username exists in database already, return True
     try:
         User.query.filter(User.username == username).one()
         return 'True'
@@ -632,18 +540,14 @@ def save_log():
                         Log.departed).filter(Log.visit_date == visit_date,
                         Log.log_id != log_id).all()
 
-    for start_end in logged_times:
-        # if there are any overlapping times in entries for the day, return False
-        if ((start_end[0] <= start_time <= start_end[1]) or (start_end[0] <= end_time <= start_end[1])):
-            return 'False'
-        elif ((start_time <= start_end[0]) and (end_time >= start_end[1])):
-            return 'False'
+    if helper.check_overlap_times(logged_times, start_time, end_time) == 'False':
+        return 'False'
 
     # if no logs that overlap in time for this day, update details for the log
     log.visit_date = visit_date
     log.arrived = start_time
     log.departed = end_time
-    # commit changes
+
     db.session.commit()
 
     return 'True'

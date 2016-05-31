@@ -3,6 +3,7 @@ from server import app
 from model import connect_to_db, db, User, Log, Location, Type, LocationType 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+import helper
 
 ##############################
 
@@ -23,12 +24,16 @@ class ProjectTestFunctional(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+# User visits homepage and is greeted with homepage.
+
     # def test_homepage_title(self):
     #     """Test for correct browser page title"""
 
     #     self.browser.get('http://localhost:5000')
     #     self.assertEqual('Project', self.browser.title)
-    #     # self.fail('Finish the test!')
+
+
+# User does not have an account yet and decides to create one.
 
     def test_signup_form(self):
 
@@ -43,8 +48,8 @@ class ProjectTestFunctional(unittest.TestCase):
             else:
                 self.fail('Element not on page')
 
-            hidden_element = self.browser.find_element_by_id('login')
-            if element.is_displayed():
+            hidden_element = self.browser.find_element_by_id('login-form')
+            if hidden_element.is_displayed():
                 self.fail('Element should not display on page')
             else:
                 print 'Element hidden'
@@ -55,41 +60,41 @@ class ProjectTestFunctional(unittest.TestCase):
 
 
 
-# class ProjectTestUnit(unittest.TestCase):
-#     """Unit tests for Hackbright Project"""
+class ProjectTestUnit(unittest.TestCase):
+    """Unit tests for Hackbright Project"""
 
-#     def setUp(self):
-#         app.config['TESTING'] = True
-#         app.config['SECRET_KEY'] = 'key'
-#         self.client = app.test_client()
+    def setUp(self):
+        app.config['TESTING'] = True
+        app.config['SECRET_KEY'] = 'key'
+        self.client = app.test_client()
 
-#     def test_homepage(self):
-#         """Test to see if home page text appears"""
-#         result = self.client.get('/')
-#         self.assertIn('Go do the things', result.data)
+    def test_homepage(self):
+        """Test to see if home page text appears"""
+        result = self.client.get('/')
+        self.assertIn('Go do the things', result.data)
 
 
-# class ProjectTestDatabase(unittest.TestCase):
-#     """Tests that use the database"""
+class ProjectTestDatabase(unittest.TestCase):
+    """Tests that use the database"""
 
-#     def setUp(self):
-#         self.client = app.test_client()
-#         app.config['TESTING'] = True
-#         connect_to_db(app, "postgresql:///testdb")
-#         app.config['SECRET_KEY'] = 'ABC'
+    def setUp(self):
+        self.client = app.test_client()
+        app.config['TESTING'] = True
+        connect_to_db(app, "postgresql:///testdb")
+        app.config['SECRET_KEY'] = 'ABC'
 
-#     def tearDown(self):
-#         db.session.close()
+    def tearDown(self):
+        db.session.close()
 
-#     def test_login(self):
-#         """test if user can login and see profile page info"""
-#         with self.client as c:
-#             with c.session_transaction() as sess:
-#                 sess['user'] = 'bbuilder'
-#                 sess['home_lat'] = '37.794434'
-#                 sess['home_long'] = '-122.39520160000001'
-#             result = c.get('/', follow_redirects=True)
-#             self.assertIn('Welcome back', result.data)
+    def test_login(self):
+        """test if user can login and see profile page info"""
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user'] = 'bbuilder'
+                sess['home_lat'] = '37.794434'
+                sess['home_long'] = '-122.39520160000001'
+            result = c.get('/', follow_redirects=True)
+            self.assertIn('Welcome back', result.data)
 
 if __name__ == "__main__":
     unittest.main()

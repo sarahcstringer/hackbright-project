@@ -4,9 +4,10 @@
 
 <h1>Location Directory</h1>
 <ul class="nav nav-tabs">
-  <li role="presentation" class="active"><a id='sortAlpha' href="#">List</a></li>
+  <li role="presentation"><a id='sortAlpha' href="#">List</a></li>
   <li role="presentation"><a id='mapView' href="#">Map</a></li>
 </ul>
+<!-- Search bar for location directory -->
 <div class="input-group input-group-lg" id='searchLocationDiv'>
   <span class="input-group-addon" id="sizing-addon1">Search</span>
   <input type="text" id="searchLocations" placeholder="Search for location" class="form-control" aria-describedby="sizing-addon1">
@@ -18,6 +19,8 @@
 <div id="googleMap" style="width:500px;height:380px;"></div>
 
 <script> 
+
+// Load location directory initially (contains all locations user has visited)
 
 $( document ).ready(function() {
     $('#locationDirectory').show();
@@ -43,6 +46,7 @@ $( document ).ready(function() {
 
     }
 ///////////////////////////////////////////
+// Create map of all locations //
     function initialize() {
 
         function removeMarkers(){
@@ -78,6 +82,8 @@ $( document ).ready(function() {
 
     removeMarkers();
 
+    // Iterate through locations and create markers
+
     for (var key in data) {
       location = data[key];
 
@@ -97,8 +103,10 @@ $( document ).ready(function() {
       bounds.extend(marker.position);
       bindInfoWindow(marker, map, infoWindow, html)
     }
+    // Extend map bounds to show all locations
     map.fitBounds(bounds);
   };
+  // Toggle show map view when selected
 
 $('#mapView').on('click', function() {
     $('#googleMap').show();
@@ -125,7 +133,7 @@ $('#sortAlpha').on('click', function() {
     $.get('/location-directory', function(data) {
 
     var location, marker, html;
-
+// Create list of all locations with link to individual location page
     for (var key in data) {
       location = data[key];
 
@@ -147,6 +155,7 @@ $('#sortAlpha').on('click', function() {
 </script>
 
 <script>
+// User can search by location name
   $('#searchLocations').keyup(function() {
     $('#locationDirectory').hide();
     $('#searchLocationDiv').show();

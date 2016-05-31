@@ -1,40 +1,66 @@
 {% extends 'base.html' %}
 {% block content %}
-<button id='backDir' name='backDir'>Back to Directory</button>
 
+<!-- Display location information -->
+
+<div class='container'>
+<div class='row'>
 <h1>{{ location_info.name }}</h1>
 <h4>{{ location_info.address }}</h4>
 <p>Phone: {{ location_info.phone }}</p>
 {% if location_info.website != 'N/A' %}
 <p><a href={{ location_info.website }}>Visit Website</a></p>
-{% endif %}
-<div id='map'></div>
+{% endif %}</div>
+<div class='row'>
+<div id='map' class="col-md-6 col-md-push-6"></div>
 
+
+<!-- If want to add establishment types -->
 <!-- <ul>Location Type:
 {% for loc_type in location_info.locationtypes %}
     <li>{{ loc_type.location_type.type_name }}</li>
 {% endfor %}
 </ul>
  -->
-<div><h3>Logs</h3>
 
+ <!-- Display logs for this location -->
+<div class="col-md-6 col-md-pull-6"><h3>Logs</h3>
+<!-- table of each log for this location -->
+<table class="table table-hover" style='width:70%'>
 {% for log in location_logs %}
-<ul> <b>{{ log.title }}</b>, {{ log.visit_date}} </p>
-<li>Arrived: {{ log.arrived }}</li>
-<li>Departed: {{ log.departed }}</li>
-<li>Comments: {{ log.comments }}</li>
-<li>Created: {{ log.created_at}}</li>
-</ul>
+ <th class='logTitle' colspan='2' id='{{log.log_id}}'>{{ log.title }}</th>
+<tr hidden id='info{{log.log_id}}'>
+ <td>{{ log.visit_date}} </td>
+<td>
+<p>Arrived: {{ log.arrived }}</p>
+<p>Departed: {{ log.departed }}</p>
+<p>Comments: {{ log.comments }}</p>
+<p>Created: {{ log.created_at}}</p>
+</td></tr>
 {% endfor %}
+</table>
 
+</div>
+</div>
 </div>
 
 
 <script>
-    $('#backDir').on('click', function() {
-        window.location.href = ('/profile/{{session["user"]}}/view-locations');
-    })
+$(window).resize(function () {
+    var h = $(window).height(),
+        offsetTop = 190; // Calculate the top offset
 
+    $('#map').css('height', (h - offsetTop));
+}).resize();
+
+
+// Expand/condense log information
+$('.logTitle').on('click', function() {
+    log_id = $( this ).attr('id')
+    $('#info'+log_id).toggle();
+})
+
+// Create map with marker for the one location
     function initialize() {
 
     var marker = new google.maps.Marker({

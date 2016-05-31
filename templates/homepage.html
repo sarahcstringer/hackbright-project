@@ -9,9 +9,11 @@
 
     color: white;
     text-align: center;
-}
+    }
 
 </style>
+
+<!-- Landing/home page with signup and login options -->
 
 <div class="site-wrapper" id='loginStuff'>
     <div class="site-wrapper-inner">
@@ -25,6 +27,7 @@
     </div>
     <br>
     <div>
+    <!-- Login form -->
 <form action='/login' method='POST' id='login-form' hidden>
     <input style='color:black' type='text' id='username' name='username' placeholder='Username'>
     <br>
@@ -40,15 +43,16 @@
 <p>Don't have an account? <a href='#' id='signupLink'>Sign up here.</a></p>
 
 </div>
+<!-- Signup Form -->
 <div id='signup' hidden>
-<form action='/create-profile' method='POST'>
+<form style='color:black' action='/create-profile' method='POST'>
     First Name: <input type='text' name='fname' placeholder='First name' required>
     <br>
     Last Name: <input type='text' name='lname' placeholder='Last name' required>
     <br>
     Email: <input type='text' name='email' placeholder="Email" required>
     <br>
-    Username: <input type='text' name='username' id='username' placeholder="Username" required>
+    Username: <input type='text' name='createUsername' id='createUsername' placeholder="Username" required>
     <br>
     <div id='checkUsernamediv'></div>
     Password: <input type='password' name='pw' id='pw' placeholder="Create a password" required>
@@ -97,10 +101,10 @@
     })
 
 
-    $('#username').keyup(function(evt) {
-        $.post('/check-username', {'username': $('#username').val()}, function(data) {
+    $('#createUsername').keyup(function(evt) {
+        $.post('/check-username', {'username': $('#createUsername').val()}, function(data) {
             if (data === 'True') {
-                $('#checkUsernamediv').show().html('<b>Username taken. Please select another</b>')
+                $('#checkUsernamediv').show().html('<b>Username taken. Please select another.</b>')
                 $('#createaccount').hide()
             } else {
                 $('#checkUsernamediv').hide()

@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="container">
 <h1>{{user.fname}} {{user.lname}}</h1>
-<ul class="nav nav-tabs">
-  <li role="presentation" class="active"><a id='userInfo' href="#">User Information</a></li>
-  <li role="presentation"><a href="#">Trends</a></li>
-</ul>
+<hr>
 <h3 id='displayUsername'>Username: {{user.username}}</h3>
 <button id='editUsername'>Edit Username</button>
 <p>Home location: {{ user.home_address }}</p>
@@ -17,10 +15,17 @@
 
 <p>Number of logs: {{ num_logs }}</p>
 <p>User since: {{ user.date_created }}</p>
-
+</div>
 
 <script>
-    
+    $(window).resize(function () {
+    var h = $(window).height(),
+        offsetTop = 190; // Calculate the top offset
+
+    $('#map').css('height', (h - offsetTop));
+}).resize();
+
+
     $('#editUsername').on('click', function() {
         $('#displayUsername').html('<input id="newUsername" placeholder={{user.username}} value={{user.username}}>'+
             '<br><button id="submitUsername">Submit</button>' +

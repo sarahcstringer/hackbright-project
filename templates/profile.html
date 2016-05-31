@@ -88,4 +88,13 @@
       }
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>
+
+    <script type="text/javascript">
+      $(window).resize(function () {
+    var h = $(window).height(),
+        offsetTop = 190; // Calculate the top offset
+
+    $('#map').css('height', (h - offsetTop));
+}).resize();
+    </script>
 {% endblock %}
