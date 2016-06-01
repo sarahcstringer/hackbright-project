@@ -270,6 +270,7 @@ def change_time_range():
     start_time = request.form.get('startTime').split(' ')
     print "****", start_time
     start_time = helper.format_time(start_time)
+    print start_time
 
     end_time = request.form.get('endTime').split(' ')
     end_time = helper.format_time(end_time)
@@ -292,8 +293,8 @@ def change_time_range():
         # filter for user's logs matching date and in between specificed time range
         for log in Log.query.filter(Log.user_id == user.user_id,
                                 Log.visit_date == unicode(date_of_logs),
-                                Log.arrived >= start_time,
-                                Log.departed <= end_time)
+                                Log.arrived <= end_time,
+                                Log.departed >= start_time)
                                 .order_by(Log.arrived)
                                 .all()]
 
@@ -375,8 +376,8 @@ def change_date():
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
                                 Log.visit_date == unicode(date_of_logs),
-                                Log.arrived >= start_time,
-                                Log.departed <= end_time)
+                                Log.arrived >= end_time,
+                                Log.departed <= start_time)
                                 .order_by(Log.arrived)
                                 .all()]
     # format date to display on page
@@ -529,7 +530,8 @@ def save_log():
     log = Log.query.get(log_id)
     # retrieve information user entered for updated log entry
     log.title = request.form.get('newTitle')
-    log.comments = request.form.get('newComments')
+    if request.form['newComments'] != '':
+        log.comments = request.form.get('newComments')
     visit_date = request.form.get('newDate')
     start_time = request.form.get('newArrival')
     end_time = request.form.get('newDeparture')

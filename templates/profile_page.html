@@ -160,6 +160,7 @@ function initialize() {
             })
           })
           $('#save'+thisID).on('click', function() {
+            var myRow = $(this).parent().parent()
             var edittedInfo = {'logID': thisID,
                               'newTitle': $('#newTitle'+thisID).val(),
                               'newDate': $('#date'+thisID).val(),
@@ -170,6 +171,8 @@ function initialize() {
             $.post('/save-log', edittedInfo, function(data) {
               console.log(data)
                if (data === 'True') {
+                  // myRow.load('/profile/{{session["user"]}}' + myRow)
+                  // console.log($(this))
                   location.reload();
               } else {
                 $('#overlappingTimes').html('Times overlap');
@@ -275,7 +278,6 @@ $('#changeDateDatepicker').on('click', function() {
   };
 
 google.maps.event.addDomListener(window, 'load', initialize);
-
 
 </script>
 
