@@ -376,8 +376,8 @@ def change_date():
         }
         for log in Log.query.filter(Log.user_id == user.user_id,
                                 Log.visit_date == unicode(date_of_logs),
-                                Log.arrived >= end_time,
-                                Log.departed <= start_time)
+                                Log.arrived <= end_time,
+                                Log.departed >= start_time)
                                 .order_by(Log.arrived)
                                 .all()]
     # format date to display on page
@@ -536,6 +536,8 @@ def save_log():
     start_time = request.form.get('newArrival')
     end_time = request.form.get('newDeparture')
 
+    data = {}
+
     # query db for the other logs a user has entered for that day to make sure
     # there are no overlapping time entries
     logged_times = db.session.query(Log.arrived, 
@@ -543,7 +545,8 @@ def save_log():
                         Log.log_id != log_id).all()
 
     if helper.check_overlap_times(logged_times, start_time, end_time) == 'False':
-        return 'False'
+        data['status'] = 'False'
+        return
 
     # if no logs that overlap in time for this day, update details for the log
     log.visit_date = visit_date
@@ -552,8 +555,67 @@ def save_log():
 
     db.session.commit()
 
-    return 'True'
-        
+    log = Log.query.get(log_id)
+
+    data['status'] = 'True'
+    data['title'] = log.title
+    data['arrived'] = log.arrived
+    data['departed'] = log.departed
+    data['comments'] = log.comments
+    data['location'] = log.location.name
+    data['visited'] = log.visit_date
+
+    return jsonify(data)
+
+@app.route('/test-log-info', methods=['POST'])
+def test_log_info():
+    start_date = request.form.get('startDate')
+    print '***********', start_date
+    end_date = request.form.get('endDate')
+    print end_date
+    # start_date = 'Tuesday, May 31, 2016'
+    # end_date = 'Thursday, June 02, 2016'
+    start_date = datetime.strptime(start_date, '%A, %B %d, %Y')
+    start_date = start_date.strftime('%Y-%m-%d')
+    end_date = datetime.strptime(end_date, '%A, %B %d, %Y')
+    end_date = end_date.strftime('%Y-%m-%d')
+
+    num_logs = {}
+    this_day = start_date
+    data_dict = {
+        'labels': [],
+        'datasets': [
+            {
+                'label': 'Test',
+                "fillColor": "rgba(220,220,220,0.2)",
+                "strokeColor": "rgba(220,220,220,1)",
+                "pointColor": "rgba(220,220,220,1)",
+                "pointStrokeColor": "#fff",
+                "pointHighlightFill": "#fff",
+                "pointHighlightStroke": "rgba(220,220,220,1)",
+                'data': []
+            }
+        ]
+
+    }
+
+    while this_day != end_date:
+
+        num_logs_this_day = db.session.query(func.count(Log.log_id)).filter(Log.visit_date==this_day).all()
+        num_logs[this_day] = int(num_logs_this_day[0][0])
+
+
+        this_day = datetime.strptime(this_day, '%Y-%m-%d')
+        this_day = this_day + timedelta(days=1)
+        this_day = this_day.strftime('%Y-%m-%d')
+
+    for key in sorted(num_logs.keys()):
+        data_dict['labels'].append(key)
+        data_dict['datasets'][0]['data'].append(num_logs[key])
+
+
+    return jsonify(data_dict)
+
 
 ###################
 

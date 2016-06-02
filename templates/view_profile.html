@@ -1,6 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
 
+
+  <div class="melon-chart">
+    <canvas id="lineChart"></canvas>
+    <div id="lineLegend" class="chart-legend"></div>
+    Start: <input type='text' id='startDateChart'>
+    End: <input type='text' id='endDateChart'>
+    <button id='go' name='go'>Go</button>
+  </div>
+
+  <script>
+  
+    var options = {
+      responsive: true
+    };
+    var ctx_line = $("#lineChart").get(0).getContext("2d");
+
+    $('#go').on('click', function () {
+      var startEndChart = {'startDate': $('#startDateChart').val(),
+                      'endDate': $('#endDateChart').val()}
+    $.post("/test-log-info", startEndChart, function (data) {
+      var myLineChart = new Chart(ctx_line).Line(data, options);
+      $("#lineLegend").html(myLineChart.generateLegend());
+    });
+  })
+  </script>
+
 <div class="container">
 <h1>{{user.fname}} {{user.lname}}</h1>
 <hr>
@@ -17,6 +43,27 @@
 <p>Number of logs: {{ num_logs }}</p>
 <p>User since: {{ user.date_created }}</p>
 </div>
+
+
+
+<!-- <div id='testLogs'>
+  <input type='text' id='startDate' name='startDate'>
+  <input type='text' id='endDate' name='endDate'>
+  <button id='go' name='go'>Go</button>
+</div>
+
+<script>
+  $('#go').click(function() {
+    var startEndDates = {'start': $('#startDate').val(),
+                        'end': $('#endDate').val()}
+    $.post('/test-log-info', startEndDates, function(data) {
+      for (var i = 0; i<data.length; i++) {
+        var num_logs = data[i]
+        console.log(num_logs['date'])
+      }
+    })
+  })
+</script> -->
 
 <script>
     $(window).resize(function () {

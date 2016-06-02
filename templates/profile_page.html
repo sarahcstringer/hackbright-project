@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
 <!-- Profile info for user -->
  <div class="container">
    <div class="row">
@@ -160,7 +159,7 @@ function initialize() {
             })
           })
           $('#save'+thisID).on('click', function() {
-            var myRow = $(this).parent().parent()
+            // var myRow = $(this).parent().parent()
             var edittedInfo = {'logID': thisID,
                               'newTitle': $('#newTitle'+thisID).val(),
                               'newDate': $('#date'+thisID).val(),
@@ -169,11 +168,23 @@ function initialize() {
                               'newComments': $('#comments'+thisID).val()};
 
             $.post('/save-log', edittedInfo, function(data) {
-              console.log(data)
-               if (data === 'True') {
-                  // myRow.load('/profile/{{session["user"]}}' + myRow)
-                  // console.log($(this))
-                  location.reload();
+               if (data.status === 'True') {
+                if (data.visited !== log.visitDate) {
+                  $('#'+thisID).parent().hide();
+                }
+
+                var newHTML = ('<p>'+data.location +'</p>' +
+        '<p><b>Date: </b>' + data.visited + '</p>' +
+        '<p>Arrived: ' + data.arrived + '</p>' +
+        '<p>Departed: ' + data.departed + '</p>' + 
+        '<p>Comments: ' + data.comments + '</p>')
+                  $('#'+thisID).html(newHTML);
+                  $('#'+thisID).show();
+                  $('#EditInfoFor'+thisID).hide();
+
+
+                  
+
               } else {
                 $('#overlappingTimes').html('Times overlap');
             }
@@ -232,8 +243,7 @@ function getTime(hours, minutes) {
     
     endTime = getTime(hours1, minutes1);
 
-    $("#time").html('Start: <input type="text" name="start" id="startInput" value='+startTime+' placeholder='+startTime+'>   ' +
-      'End: <input type="text" name="end" id="endinput" value='+endTime+' placeholder='+endTime+'>')
+    $("#time").html('<p><b>Start:</b> '+startTime+' | <b>End:</b> '+endTime+'</p>')
     $.post('/change-time-range', {'showDate': $('#displayDate').html(), 'startTime': startTime, 'endTime': endTime}, addMarkers)
 
 }

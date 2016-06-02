@@ -2,6 +2,8 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from sqlalchemy import or_, func, desc, update
+from datetime import datetime, timedelta
 
 db = SQLAlchemy()
 
@@ -140,7 +142,6 @@ def connect_to_db(app, db_uri='postgresql:///locations'):
     # app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)
-
 
 
 if __name__ == '__main__':
