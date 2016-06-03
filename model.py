@@ -73,6 +73,9 @@ class Log(db.Model):
 
         return "<Log title: {}, created on{}".format(self.title, self.created_at)
 
+
+############### useful if wanting to do something with establishment types in the future; 
+# not currently using the Type and LocationType tables
 class Type(db.Model):
 
     __tablename__ = 'types'

@@ -12,7 +12,7 @@
 <hr>
 <div id='userBasics'>
 <h3 id='displayUsername'>Username: {{user.username}}</h3>
-<button id='editUsername'>Edit Username</button>
+<button id='editUsername' style='display:inline-block' hidden>Edit Username</button>
 <p>Home location: {{ user.home_address }}</p>
 <button id='editHomeLocation'>Edit Home Location</button><br><br>
 <div id='inputDiv'><input id="pac-input" class="controls" type="text"
@@ -26,7 +26,7 @@
 <div id='userData' hidden>
 
 <p>Number of logs: {{ num_logs }}</p>
-<p>User since: {{ user.date_created }}</p>
+<p>User since: {{ user_start_date }}</p>
     
     <h3>View Logs Over Time: </h3>
     Start: <input type="text" class="datepick" id="date_1" />
@@ -74,6 +74,8 @@
       $("#lineLegend").html(myLineChart.generateLegend());
     });
   })
+
+
   </script>
 
 <script>

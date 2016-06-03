@@ -96,10 +96,8 @@ function initialize() {
       htmlDiv = (
         '<tr><td class="title-header" id="titlelog'+log.log_id+'"><b>'+log.title+'</b></td>'+
         '<td hidden class="'+ log.locationId + ' individualLog" id="log'+log.log_id+'">' +
-        '<p>'+log.locationName +'</p>' +
-        '<p><b>Date: </b>' + log.visitDate + '</p>' +
-        '<p>Arrived: ' + log.arrived + '</p>' +
-        '<p>Departed: ' + log.departed + '</p>' + 
+        '<p>'+log.locationName +'</p>' + 
+        '<p><b>Time: </b>' + log.arrived + ' - ' + log.departed + '</p>' +
         '<p>Comments: ' + log.comments + '</p></td></tr>' +
         '<div hidden id="EditInfoForlog' + log.log_id +'">' +
         '<input id="newTitlelog'+log.log_id+'" type="text" value="'+log.title+'" placeholder="'+log.title+'">'+

@@ -467,11 +467,14 @@ def view_profile(username):
 
     # retrieve user information
     user = User.query.filter(User.username == username).one()
+    user_start_date = user.date_created
+    user_start_date= user_start_date.strftime('%m/%d/%Y')
 
     # retrieve number of logs user has created
     num_logs = len(Log.query.filter(Log.user_id == user.user_id).all())
 
-    return render_template('view_profile.html', user=user, username=username, num_logs=num_logs)
+    return render_template('view_profile.html', user_start_date=user_start_date,
+                            user=user, username=username, num_logs=num_logs)
 
 
 @app.route('/edit-username-check', methods=['POST'])
