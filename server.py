@@ -570,14 +570,13 @@ def save_log():
 @app.route('/test-log-info', methods=['POST'])
 def test_log_info():
     start_date = request.form.get('startDate')
-    print '***********', start_date
     end_date = request.form.get('endDate')
-    print end_date
-    # start_date = 'Tuesday, May 31, 2016'
-    # end_date = 'Thursday, June 02, 2016'
-    start_date = datetime.strptime(start_date, '%A, %B %d, %Y')
+
+
+    start_date = datetime.strptime(start_date, '%m/%d/%Y')
     start_date = start_date.strftime('%Y-%m-%d')
-    end_date = datetime.strptime(end_date, '%A, %B %d, %Y')
+    end_date = datetime.strptime(end_date, '%m/%d/%Y')
+    end_date = end_date + timedelta(days=1)
     end_date = end_date.strftime('%Y-%m-%d')
 
     num_logs = {}
@@ -586,7 +585,7 @@ def test_log_info():
         'labels': [],
         'datasets': [
             {
-                'label': 'Test',
+                # 'label': 'Test',
                 "fillColor": "rgba(220,220,220,0.2)",
                 "strokeColor": "rgba(220,220,220,1)",
                 "pointColor": "rgba(220,220,220,1)",
@@ -613,7 +612,6 @@ def test_log_info():
         data_dict['labels'].append(key)
         data_dict['datasets'][0]['data'].append(num_logs[key])
 
-
     return jsonify(data_dict)
 
 
@@ -622,7 +620,7 @@ def test_log_info():
 if __name__ == '__main__':
 
     connect_to_db(app)
-    app.debug = True
+    # app.debug = True
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
     app.run()

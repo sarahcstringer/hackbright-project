@@ -2,34 +2,15 @@
 {% block content %}
 
 
-  <div class="melon-chart">
-    <canvas id="lineChart"></canvas>
-    <div id="lineLegend" class="chart-legend"></div>
-    Start: <input type='text' id='startDateChart'>
-    End: <input type='text' id='endDateChart'>
-    <button id='go' name='go'>Go</button>
-  </div>
-
-  <script>
-  
-    var options = {
-      responsive: true
-    };
-    var ctx_line = $("#lineChart").get(0).getContext("2d");
-
-    $('#go').on('click', function () {
-      var startEndChart = {'startDate': $('#startDateChart').val(),
-                      'endDate': $('#endDateChart').val()}
-    $.post("/test-log-info", startEndChart, function (data) {
-      var myLineChart = new Chart(ctx_line).Line(data, options);
-      $("#lineLegend").html(myLineChart.generateLegend());
-    });
-  })
-  </script>
-
 <div class="container">
+<ul class="nav nav-tabs">
+  <li role="presentation"><a id='userInfo' href="#">User Information</a></li>
+  <li role="presentation"><a id='trends' href="#">Trends</a></li>
+</ul>
+<div class='row'>
 <h1>{{user.fname}} {{user.lname}}</h1>
 <hr>
+<div id='userBasics'>
 <h3 id='displayUsername'>Username: {{user.username}}</h3>
 <button id='editUsername'>Edit Username</button>
 <p>Home location: {{ user.home_address }}</p>
@@ -39,31 +20,61 @@
 <div id='map'></div><br>
 <button name='verify' value='verify' id='verify' hidden>Verify</button>
 <button name='cancel' id='cancel' hidden>Cancel</button>
+</div>
+</div>
+<div class='row'>
+<div id='userData' hidden>
 
 <p>Number of logs: {{ num_logs }}</p>
 <p>User since: {{ user.date_created }}</p>
-</div>
+    
+    <h3>View Logs Over Time: </h3>
+    Start: <input type="text" class="datepick" id="date_1" />
+    End: <input type="text" class="datepick" id="date_2" />
+
+    <button id='go' name='go'>Go</button>
+  <div class="melon-chart">
+
+    <canvas id="lineChart"></canvas>
+
+    <div id="lineLegend" class="chart-legend"></div>
+  </div>
+  </div>
 
 
-
-<!-- <div id='testLogs'>
-  <input type='text' id='startDate' name='startDate'>
-  <input type='text' id='endDate' name='endDate'>
-  <button id='go' name='go'>Go</button>
-</div>
-
-<script>
-  $('#go').click(function() {
-    var startEndDates = {'start': $('#startDate').val(),
-                        'end': $('#endDate').val()}
-    $.post('/test-log-info', startEndDates, function(data) {
-      for (var i = 0; i<data.length; i++) {
-        var num_logs = data[i]
-        console.log(num_logs['date'])
-      }
-    })
+  <script>
+  $( document ).ready(function() {
+    $('userBasics').show()
   })
-</script> -->
+  
+  $('#trends').on('click', function(evt) {
+    $('#userData').show()
+    $('#userBasics').hide()
+  })
+
+  $('.datepick').each(function(){
+    $(this).datepicker();
+});
+
+  $('#userInfo').on('click', function(evt) {
+    $('#userData').hide()
+    $('#userBasics').show()
+  })
+
+    var options = {
+      responsive: true
+    };
+    var ctx_line = $("#lineChart").get(0).getContext("2d");
+
+    $('#go').on('click', function () {
+      var startEndChart = {'startDate': $('#date_1').val(),
+                      'endDate': $('#date_2').val()}
+    $.post("/test-log-info", startEndChart, function (data) {
+      var myLineChart = new Chart(ctx_line).Line(data, options);
+      $("#lineLegend").html(myLineChart.generateLegend());
+    });
+  })
+  </script>
 
 <script>
     $(window).resize(function () {
