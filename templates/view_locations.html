@@ -1,24 +1,49 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+  .page-head {
+    background: url("/static/img/blur-background-2.png");
+    margin-top:-20px;
+    font-family: 'Source Sans Pro', sans-serif;
+  }
 
-<h1>Location Directory</h1>
-<ul class="nav nav-tabs">
-  <li role="presentation"><a id='sortAlpha' href="#">List</a></li>
-  <li role="presentation"><a id='mapView' href="#">Map</a></li>
+  
+</style>
+
+<div class='container-fluid'>
+<div class='row page-head' style="text-align:center">
+<br><br>
+<h1><b>Location Directory</b></h1>
+
+<ul class="nav nav-tabs" style="font-size:125%">
+  <li role="presentation" class='active'><a id='sortAlpha' href="#"><b>List</b></a></li>
+  <li role="presentation"><a id='mapView' href="#"><b>Map</b></a></li>
 </ul>
+</div>
+<br>
 <!-- Search bar for location directory -->
 <div class="input-group input-group-lg" id='searchLocationDiv'>
   <span class="input-group-addon" id="sizing-addon1">Search</span>
   <input type="text" id="searchLocations" placeholder="Search for location" class="form-control" aria-describedby="sizing-addon1">
 </div>
-
+<br>
+</div>
+<div class='container-fluid'>
 <!-- <input type='text' id='searchLocations' placeholder="Search for location"> -->
-<div id='locationDirectory'></div>
-<div id='searchResults'></div>
-<div id="googleMap" style="width:500px;height:380px;"></div>
+<div style="font-size:115%" id='locationDirectory'></div>
+<div style="font-size:115%" id='searchResults'></div>
+<div id="map"></div>
+</div>
 
 <script> 
+
+    $(window).resize(function () {
+    var h = $(window).height(),
+        offsetTop = 190; // Calculate the top offset
+
+    $('#map').css('height', (h - offsetTop));
+  }).resize();
 
 // Load location directory initially (contains all locations user has visited)
 
@@ -73,7 +98,7 @@ $( document ).ready(function() {
     zoom:10,
     mapTypeId:google.maps.MapTypeId.ROADMAP
     };
-    var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+    var map=new google.maps.Map(document.getElementById("map"),mapProp);
 
     var markers = [];
 
@@ -109,7 +134,9 @@ $( document ).ready(function() {
   // Toggle show map view when selected
 
 $('#mapView').on('click', function() {
-    $('#googleMap').show();
+    $('#sortAlpha').parent().removeClass('active');
+    $( this ).parent().addClass('active');
+    $('#map').show();
     $('#searchResults').hide();
     $('#searchLocationDiv').hide();
     $('#listCategory').hide();
@@ -124,7 +151,9 @@ $('#mapView').on('click', function() {
 
 <script>
 $('#sortAlpha').on('click', function() {
-    $('#googleMap').hide();
+    $('#mapView').parent().removeClass('active');
+    $( this ).parent().addClass('active');
+    $('#map').hide();
     $('#searchLocationDiv').show();
     $('#searchLocations').val('');
     $('#locationDirectory').html('');
@@ -160,7 +189,7 @@ $('#sortAlpha').on('click', function() {
     $('#locationDirectory').hide();
     $('#searchLocationDiv').show();
     $('#searchResults').show();
-    $('#googleMap').hide();
+    $('#map').hide();
     var searchTerms = {'search': $('#searchLocations').val().toLowerCase()}
 
     $.post('/search-location-directory', searchTerms, function(data) {

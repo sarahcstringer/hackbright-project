@@ -5,7 +5,7 @@
 
 <div class='container'>
 <div class='row'>
-<h1>{{ location_info.name }}</h1>
+<h1><b>{{ location_info.name }}</b></h1>
 <h4>{{ location_info.address }}</h4>
 <p>Phone: {{ location_info.phone }}</p>
 {% if location_info.website != 'N/A' %}
@@ -24,7 +24,7 @@
  -->
 
  <!-- Display logs for this location -->
-<div class="col-md-6 col-md-pull-6"><h3>Logs</h3>
+<div class="col-md-6 col-md-pull-6" style="font-size:115%"><h3>Logs</h3>
 <!-- table of each log for this location -->
 <table class="table table-hover" style='width:70%'>
 {% for log in location_logs %}
@@ -32,9 +32,8 @@
 <tr hidden id='info{{log.log_id}}'>
  <td>{{ log.visit_date}} </td>
 <td>
-<p>Arrived: {{ log.arrived }}</p>
-<p>Departed: {{ log.departed }}</p>
-<p>Comments: {{ log.comments }}</p>
+<p><b>Time: </b>{{ log.arrived }} - {{ log.departed }}</p>
+<p><b>Comments: </b>{{ log.comments }}</p>
 <p>Created: {{ log.created_at}}</p>
 </td></tr>
 {% endfor %}
