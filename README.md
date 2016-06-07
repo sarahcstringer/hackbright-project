@@ -1,5 +1,6 @@
 # Locography
 Locography is a location-based journal that creates concrete views of where users have spent their time. 
+![Login Page](/static/img/login.png)
 
 ### Table of Contents
 - [Technologies Used](#tech-used)
@@ -41,7 +42,6 @@ $ python model.py
 $ python server.py
 ```
 - Access the web app at localhost:5000
-![Login Page](/static/img/login.png)
 
 ## <a name='features'></a>Features
 - Account setup and user login
@@ -49,6 +49,8 @@ $ python server.py
 - View logs:
     * On home page load, browser receives a JSON object of any logs a user has already created for the current date.
     * User can scroll through day by day (using << and >> buttons) or select a date on the dropdown datepicker menu to jump to that specific day's logs.
+    * Ways to interact with logs on homepage:
+![Homepage](/static/img/homepage.png)
 
 
 Author: [Sarah Stringer](https://www.linkedin.com/in/sarahstringer)
