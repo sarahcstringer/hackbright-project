@@ -43,6 +43,6 @@ $ python server.py
 - Access the web app at localhost:5000
 
 ## <a name="create-account"></a>Create An Account
-[Login Page](/static/img/login.png)
+![Login Page](/static/img/login.png)
 
 Author: [Sarah Stringer](https://github.com/sarahcstringer)
