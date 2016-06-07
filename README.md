@@ -51,7 +51,7 @@ $ python server.py
     * User can scroll through day by day (using << and >> buttons) or select a date on the dropdown datepicker menu to jump to that specific day's logs.
     * Ways to interact with logs on homepage:
 
-![Homepage](/static/img/homepage.png)
+![Homepage](/static/img/homepage1.png)
 
 
 Author: [Sarah Stringer](https://www.linkedin.com/in/sarahstringer)
