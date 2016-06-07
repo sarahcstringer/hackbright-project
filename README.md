@@ -50,6 +50,7 @@ $ python server.py
     * On home page load, browser receives a JSON object of any logs a user has already created for the current date.
     * User can scroll through day by day (using << and >> buttons) or select a date on the dropdown datepicker menu to jump to that specific day's logs.
     * Ways to interact with logs on homepage:
+
 ![Homepage](/static/img/homepage.png)
 
 
