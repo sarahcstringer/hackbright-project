@@ -26,3 +26,5 @@ Locography is not deployed.
 '''sh
 $ pip install -r requirements.txt
 '''
+
+Author: [Sarah Stringer](https://github.com/sarahcstringer)
