@@ -4,48 +4,58 @@
 <style>
 
     body {
-    background: #333 url("/static/img/OA-SunriseWaterfront_05.jpg");
+    background: #333 url("/static/img/city.png");
     background-size: cover;
 
     color: white;
     text-align: center;
     }
 
+      div.transbox {
+   background: rgba(255, 255, 255, 0.2); 
+   border-radius: 25px;
+}
+
 </style>
 
 <!-- Landing/home page with signup and login options -->
 
 <div class="site-wrapper" id='loginStuff'>
+    <div class='transbox col-md-4 col-md-offset-4'>
     <div class="site-wrapper-inner">
 
-        <h1 style='padding-top:75px'>Locography</h1>
+        <h1 style='font-size:400%'><b>Locography</b></h1>
 
-        <p class="lead">Go do the things.</p>
+        <p class="lead" style="font-size: 200%">Go do the things.</p>
 
-        <button id='login' class="btn btn-lg btn-primary">Login</button>
+        <button id='login' class="btn btn-lg btn-primary" style='font-size: 150%'>Login</button>
 
     </div>
     <br>
     <div>
     <!-- Login form -->
-<form action='/login' method='POST' id='login-form' hidden>
+<form action='/login' method='POST' id='login-form' style="font-size:125%" hidden>
     <input style='color:black' type='text' id='username' name='username' placeholder='Username'>
     <br>
     <input style='color:black' type='password' id='password' name='password' placeholder="Password">
     <br><br>
-    <input type='submit' value='Submit' id='submit' style="background-color: grey; font-family:">
+    <input type='submit' value='Submit' id='submit' style="background-color: #333; border: 1px solid #333">
     <br>
 </form>
 <div id='loginCredentials'></div>
 </div>
+<!-- </div> -->
 <br>
 
-<p>Don't have an account? <a href='#' id='signupLink'>Sign up here.</a></p>
+<p style='font-size: 125%'>Don't have an account? <a href='#' id='signupLink'><b>Sign up here.</b></a></p>
 
 </div>
+</div>
 <!-- Signup Form -->
+<div class='transbox col-md-4 col-md-offset-4'>
 <div id='signup' hidden>
 <form style='color:black' action='/create-profile' method='POST'>
+    <h1><b>Create an account</b></h1>
     First Name: <input type='text' name='fname' placeholder='First name' required>
     <br>
     Last Name: <input type='text' name='lname' placeholder='Last name' required>
@@ -62,9 +72,9 @@
     <br>
     <input type='submit' style='background-color:grey' value='Create Account' id='createaccount'>
     <button style='background-color:grey' id='back'>Back</button>
-</form>
+</form><br>
 </div>
-
+</div>
 <script>
 
     var username = $('#username').val();

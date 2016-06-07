@@ -3,7 +3,8 @@ Locography is a location-based journal that creates concrete views of where user
 
 ### Table of Contents
 - [Technologies Used](#tech-used)
-- How To Run Locally
+- [How To Run Locally](#run-local)
+- [Create An Account](#create-account)
 
 ## <a name="tech-used"></a>Technologies Used
 - Python
@@ -19,7 +20,7 @@ Locography is a location-based journal that creates concrete views of where user
 
 Dependencies are listed in requirements.txt
 
-### How To Run Locally
+## <a name="run-local"></a>How To Run Locally
 Locography is not deployed.
 
 - Create a python virtual environment and install all dependencies
@@ -40,5 +41,8 @@ $ python model.py
 $ python server.py
 ```
 - Access the web app at localhost:5000
+
+## <a name="create-account"></a>Create An Account
+- 
 
 Author: [Sarah Stringer](https://github.com/sarahcstringer)
