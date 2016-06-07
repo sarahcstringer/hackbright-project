@@ -2,10 +2,10 @@
 Locography is a location-based journal that creates concrete views of where users have spent their time. 
 
 ### Table of Contents
-- Technologies Used
+- [Technologies Used](#tech-used)
 - How To Run Locally
 
-### Technologies Used
+## <a name="tech-used"></a>Technologies Used
 - Python
 - Flask
 - PostgresSQL
@@ -23,8 +23,22 @@ Dependencies are listed in requirements.txt
 Locography is not deployed.
 
 - Create a python virtual environment and install all dependencies
-'''sh
+```sh
 $ pip install -r requirements.txt
-'''
+```
+- Have PostgreSQL running. Create a database called _locations_:
+```sh
+$ psql
+# CREATE DATABASE locations
+```
+- Create the tables in the database:
+```sh
+$ python model.py
+```
+- Start Flask server:
+```sh
+$ python server.py
+```
+- Access the web app at localhost:5000
 
 Author: [Sarah Stringer](https://github.com/sarahcstringer)
