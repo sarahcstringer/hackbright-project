@@ -4,7 +4,7 @@ Locography is a location-based journal that creates concrete views of where user
 ### Table of Contents
 - [Technologies Used](#tech-used)
 - [How To Run Locally](#run-local)
-- [Create An Account](#create-account)
+- [Features](#features)
 
 ## <a name="tech-used"></a>Technologies Used
 - Python
@@ -41,8 +41,14 @@ $ python model.py
 $ python server.py
 ```
 - Access the web app at localhost:5000
-
-## <a name="create-account"></a>Create An Account
 ![Login Page](/static/img/login.png)
 
-Author: [Sarah Stringer](https://github.com/sarahcstringer)
+## <a name='features'></a>Features
+- Account setup and user login
+- Add a log/location (uses Google Locations API to collect information about the location -- lat, long, address, phone, website -- and save it in the locations database)
+- View logs:
+    * On home page load, browser receives a JSON object of any logs a user has already created for the current date.
+    * User can scroll through day by day (using << and >> buttons) or select a date on the dropdown datepicker menu to jump to that specific day's logs.
+
+
+Author: [Sarah Stringer](https://www.linkedin.com/in/sarahstringer)
