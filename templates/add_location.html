@@ -1,16 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class='container'>
-<div class='row'>
-  <h1>Add location:</h1> 
+
+<style>
+  .page-head {
+    background: url("/static/img/location-background.png");
+    /*border:2px solid black;*/
+    margin-top:-20px;
+    font-family: 'Source Sans Pro', sans-serif;
+    text-align: center;
+  }
+  </style>
+
+<div class='container-fluid'>
+<div class='row page-head'>
+<br>
+  <h1 style='font-size:500%'><b>Add Location</b></h1> 
   <br>
+  <br>
+</div>
+</div>
+<br>
+
+  <div class='container'>
+  <div class='row'>
 
     <input id="pac-input" class="controls" type="text"
         placeholder="Enter a location">
         </div>
     <div class='row'>
     <div id="map" class="col-md-6 col-md-push-6"></div>
-    <div class="col-md-6 col-md-pull-6" style='display:inline-block; border:1px solid black;padding:5px; vertical-align:top'>
+    <div class="col-md-6 col-md-pull-6" style='display:inline-block;padding:5px; vertical-align:top; font-size:120%'>
+    <h3><b>New Log:</b></h3>
 
     Title: <input type='text' name='title' placeholder="Title" id='title'><br>
     Date: <input type='text' name='date' id='datepicker' value='{{session["date"]}}' placeholder="{{session['date']}}">
@@ -18,9 +38,10 @@
     Arrival Time: <input type='time' name='arrival' id='arrival'><br>
     Departure Time: <input type='time' name='departure' id='departure'><br>
     <div id='overlappingTimeNotice'></div><br>
-    Comments: <textarea name='comments' cols='40' rows='5' id='comments'></textarea><br>
+    Comments: <br><textarea name='comments' cols='40' rows='5' id='comments'></textarea><br>
     <button name='createLog' id='createLog'>Create Log</button>
     <button style='display:inline-block;' id='cancelAdd'>Cancel</button>
+    </div>
     </div>
     </div>
     </div>

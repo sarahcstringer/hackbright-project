@@ -2,15 +2,27 @@
 {% block content %}
 
 <!-- Display location information -->
-
-<div class='container'>
-<div class='row'>
+<style>
+  .page-head {
+    background: url("/static/img/untitled-2.png");
+    /*border:2px solid black;*/
+    margin-top:-20px;
+    font-family: 'Source Sans Pro', sans-serif;
+    text-align: center;
+  }
+  </style>
+<div class='container-fluid'>
+<div class='row page-head'>
+<br><br>
 <h1><b>{{ location_info.name }}</b></h1>
 <h4>{{ location_info.address }}</h4>
-<p>Phone: {{ location_info.phone }}</p>
-{% if location_info.website != 'N/A' %}
-<p><a href={{ location_info.website }}>Visit Website</a></p>
-{% endif %}</div>
+<p style='font-size: 115%'>Phone: {{ location_info.phone }}
+{% if location_info.website != 'N/A' %} <b>|</b> <a href={{ location_info.website }}><b>Visit Website</b></a></p>
+{% endif %}
+<br><br>
+</div>
+<br>
+<div class='container'>
 <div class='row'>
 <div id='map' class="col-md-6 col-md-push-6"></div>
 
@@ -24,7 +36,9 @@
  -->
 
  <!-- Display logs for this location -->
-<div class="col-md-6 col-md-pull-6" style="font-size:115%"><h3>Logs</h3>
+<div class="col-md-6 col-md-pull-6" style="font-size:115%">
+
+<h3>Logs</h3>
 <!-- table of each log for this location -->
 <table class="table table-hover" style='width:70%'>
 {% for log in location_logs %}
@@ -34,11 +48,13 @@
 <td>
 <p><b>Time: </b>{{ log.arrived }} - {{ log.departed }}</p>
 <p><b>Comments: </b>{{ log.comments }}</p>
-<p>Created: {{ log.created_at}}</p>
+<p style='font-size:90%'><em>Created: {{ log.created_at}}</em></p>
 </td></tr>
 {% endfor %}
 </table>
 
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -71,7 +87,7 @@ $('.logTitle').on('click', function() {
 
     var mapProp = {
         center:new google.maps.LatLng({{location_info.latitude}},{{location_info.longitude}}),
-        zoom:12,
+        zoom:13,
         mapTypeId:google.maps.MapTypeId.ROADMAP
     };
 

@@ -17,12 +17,19 @@
    <div class="col-md-12" style='text-align:center'>
 <h2><b>Where have you been today?</b></h2>
 <!-- User can move back a day or forward a day -->
-<button id='previous-day' style='display:inline' name='previous-day'><<</button>
-<h3 style='display:inline' id='displayDate'></h3>
-<button style='display:inline' id='next-day' name='next-day'>>></button>
+
+<div class='col-md-1 col-md-offset-4'>
+<button class='btn btn-default' id='previous-day' style='display:inline; font-size:125%' name='previous-day'><<</button>
+</div>
+<div class='col-md-2'>
+<h3 style='display:inline;' id='displayDate'></h3></div>
+<div class='col-md-1'>
+<button class='btn btn-default' style='display:inline; font-size:125%' id='next-day' name='next-day'>>></button></div> 
+</div>
+<div class='col-md-12 text-center'>
 <br>
-<input type="text" style='text-align:center' placeholder='Select Date' id="datepicker"></p>
-<button id='changeDateDatepicker'>Go</button><br><br>
+<input type="text" style='text-align:center; display:inline-block;' placeholder='Click to select date' id="datepicker"></p>
+<button id='changeDateDatepicker' class='btn btn-default' style='font-size:125%; display:inline-block;'><b>Go</b></button><br><br>
 <span id="time" style="font-size: 125%"></span>
 <div id="slider-range"></div>
 <span id="SlideMax"></span>
@@ -45,7 +52,7 @@
 <div class="col-md-6 col-md-pull-6">
 <div id='overlappingTimes'></div>
 <div><h3 style="text-align:center">Logs</h3>
-<table id='logs' class="table table-hover"></table>
+<table id='logs' class="table table-hover" style='font-size:115%'></table>
 </div>
 </div>
 </div>
@@ -110,7 +117,7 @@ function initialize() {
       newDiv.className = 'logDiv';
 
       htmlDiv = (
-        '<tr><td class="title-header" style="font-size: 125%" id="titlelog'+log.log_id+'"><b>'+log.title+'</b></td>'+
+        '<tr><td class="title-header" style="font-size:115%" id="titlelog'+log.log_id+'"><b>'+log.title+'</b></td>'+
         '<td hidden class="'+ log.locationId + ' individualLog" id="log'+log.log_id+'">' +
         '<p><b>Location: </b>'+log.locationName +'</p>' + 
         '<p><b>Time: </b>' + log.arrived + ' - ' + log.departed + '</p>' +
@@ -188,11 +195,9 @@ function initialize() {
                   $('#'+thisID).parent().hide();
                 }
 
-                var newHTML = ('<p>'+data.location +'</p>' +
-        '<p><b>Date: </b>' + data.visited + '</p>' +
-        '<p>Arrived: ' + data.arrived + '</p>' +
-        '<p>Departed: ' + data.departed + '</p>' + 
-        '<p>Comments: ' + data.comments + '</p>')
+                var newHTML = ('<p><b>Location: </b>'+data.location +'</p>' +
+        '<p><b>Time: </b>' + data.arrived + '-' + data.departed + '</p>' + 
+        '<p><b>Comments: </b>' + data.comments + '</p>')
                   $('#'+thisID).html(newHTML);
                   $('#'+thisID).show();
                   $('#EditInfoFor'+thisID).hide();
