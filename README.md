@@ -21,3 +21,8 @@ Dependencies are listed in requirements.txt
 
 ### How To Run Locally
 Locography is not deployed.
+
+- Create a python virtual environment and install all dependencies
+'''sh
+$ pip install -r requirements.txt
+'''

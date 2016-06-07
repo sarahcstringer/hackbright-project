@@ -7,7 +7,9 @@
     margin-top:-20px;
     font-family: 'Source Sans Pro', sans-serif;
   }
-
+  .page-head a {
+    color: white;
+  }
   
 </style>
 
@@ -22,15 +24,15 @@
 </ul>
 </div>
 <br>
+</div>
+<div class='container'>
+<!-- <input type='text' id='searchLocations' placeholder="Search for location"> -->
 <!-- Search bar for location directory -->
+<br>
 <div class="input-group input-group-lg" id='searchLocationDiv'>
   <span class="input-group-addon" id="sizing-addon1">Search</span>
   <input type="text" id="searchLocations" placeholder="Search for location" class="form-control" aria-describedby="sizing-addon1">
-</div>
-<br>
-</div>
-<div class='container-fluid'>
-<!-- <input type='text' id='searchLocations' placeholder="Search for location"> -->
+</div><br>
 <div style="font-size:115%" id='locationDirectory'></div>
 <div style="font-size:115%" id='searchResults'></div>
 <div id="map"></div>
