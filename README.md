@@ -52,6 +52,9 @@ $ python server.py
     * Ways to interact with logs on homepage:
 
 ![Homepage](/static/img/homepage1.png)
-
+    
+- View a directory of all locations a user has visited and search directory
+    * View details about each location, including any logs about that location
+- Edit username and home location
 
 Author: [Sarah Stringer](https://www.linkedin.com/in/sarahstringer)
